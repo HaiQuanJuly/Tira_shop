@@ -1,0 +1,15 @@
+@import "../../assets/style/mixin.module.scss";
+@import "../../assets/style/variable.module.scss";
+.btn {
+  @include btn(176px, 42px, 3px, $primary_color);
+  color: #fff;
+  font-weight: 300;
+  font-size: 14px;
+  cursor: pointer;
+  &:hover {
+    background-color: transparent;
+    border: 1px solid $primary_color;
+    color: $primary_color;
+    transition: background-color 300ms;
+  }
+}
