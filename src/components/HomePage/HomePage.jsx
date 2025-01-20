@@ -3,6 +3,7 @@ import Banner from "../Banner/Banner";
 // import styles from "./styles.module.scss";
 import Info from "../Info/Info";
 import AdvanceHeadling from "../AdvanceHeadling/AdvanceHeadling";
+import HeadingListProduct from "../HeadingListProduct/HeadingListProduct";
 
 function HomePage() {
   // const { container } = styles;
@@ -12,6 +13,7 @@ function HomePage() {
       <Banner></Banner>
       <Info></Info>
       <AdvanceHeadling></AdvanceHeadling>
+      <HeadingListProduct></HeadingListProduct>
     </>
   );
 }
