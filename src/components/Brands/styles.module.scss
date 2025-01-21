@@ -1,0 +1,10 @@
+@import "../../assets/style/variable.module.scss";
+@import "../../assets/style/mixin.module.scss";
+
+.container {
+  padding-top: 25px;
+}
+
+.container_Img {
+  @include flex_box_custom(space-between, center, 10px);
+}

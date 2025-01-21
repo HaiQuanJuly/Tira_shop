@@ -3,8 +3,7 @@
 
 .container {
   @include flex_box_custom(center, center, 0px);
-
-  margin: 65px 0px 15px;
+  margin: 25px 0px 15px;
 }
 
 .headline {
