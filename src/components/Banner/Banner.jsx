@@ -6,9 +6,13 @@ function Banner() {
   return (
     <div className={container}>
       <div className={content}>
-        <h1 className={title}>XStore Marseille04 Demo</h1>
+        <h1 className={title}>
+          Find Clothes <br></br> That Matches Your Style
+        </h1>
         <div className={des}>
-          Make yours celebrations even more special this years with beautiful.
+          Browse through our diverse range of meticulously crafted garments,
+          designed to bring out your individuality and cater to your sense of
+          style
         </div>
         <Button content={"Go to shop"}></Button>
       </div>

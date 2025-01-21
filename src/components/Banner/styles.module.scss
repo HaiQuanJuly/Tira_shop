@@ -13,15 +13,19 @@
 .content {
   @include flex_box_custom(center, center, 10px);
   flex-direction: column;
+  width: 600px;
 }
 
 .title {
   font-size: 42px;
   color: $four_color;
-  font-weight: 400;
+  font-weight: 900;
   margin: 15px 0;
+  text-align: center;
 }
 .des {
   color: $thr_color;
   margin-bottom: 15px;
+  text-align: center;
+  font-weight: 200;
 }
