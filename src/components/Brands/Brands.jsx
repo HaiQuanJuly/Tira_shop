@@ -11,10 +11,15 @@ function Brands() {
     <MainLayout>
       <div className={container}>
         <div className={container_Img}>
-          <img width={250} height={175} src={logoCalvin}></img>
-          <img width={250} height={175} src={logoGucci}></img>
-          <img width={250} height={175} src={logoVersace}></img>
-          <img width={250} height={175} src={logoZara}></img>
+          <img width={250} height={175} src={logoCalvin} alt="logoCalvin"></img>
+          <img width={250} height={175} src={logoGucci} alt="logoGucci"></img>
+          <img
+            width={250}
+            height={175}
+            src={logoVersace}
+            alt="logoVersace"
+          ></img>
+          <img width={250} height={175} src={logoZara} alt="logoZara"></img>
         </div>
       </div>
     </MainLayout>

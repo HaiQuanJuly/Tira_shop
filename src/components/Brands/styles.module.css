@@ -1,0 +1,10 @@
+.container {
+  padding-top: 25px;
+}
+
+.container_Img {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}/*# sourceMappingURL=styles.module.css.map */

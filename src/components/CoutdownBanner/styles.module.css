@@ -1,0 +1,26 @@
+.container {
+  background-image: url("https://xstore.8theme.com/elementor2/marseille04/wp-content/uploads/sites/2/2022/12/photo-of-man-wearing-white-hoodie-5474310.jpeg");
+  width: 50%;
+  height: 409px;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.containerTimer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.title {
+  font-size: 28px;
+  color: #222;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.boxBtn {
+  margin-top: 20px;
+  text-align: center;
+}/*# sourceMappingURL=styles.module.css.map */

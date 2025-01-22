@@ -16,6 +16,11 @@ function HomePage() {
       <Brands></Brands>
       <AdvanceHeadling></AdvanceHeadling>
       <HeadingListProduct></HeadingListProduct>
+      <div
+        style={{
+          height: "200px",
+        }}
+      ></div>
     </>
   );
 }
