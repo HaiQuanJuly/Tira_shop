@@ -1,0 +1,18 @@
+.btn {
+  outline: none;
+  border: 1px solid #e1e1e1;
+  width: 176px;
+  height: 42px;
+  background-color: #333;
+  border-radius: 3px;
+  color: #fff;
+  font-weight: 300;
+  font-size: 14px;
+  cursor: pointer;
+}
+.btn:hover {
+  background-color: transparent;
+  border: 1px solid #333;
+  color: #333;
+  transition: background-color 300ms;
+}/*# sourceMappingURL=styles.module.css.map */

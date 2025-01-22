@@ -48,8 +48,8 @@ function MyHeader() {
           </div>
 
           <div className={containerBoxIcon}>
-            <img width={26} height={26} src={heartIcon} alt="reloadIcon"></img>
-            <img width={26} height={26} src={cartIcon} alt="reloadIcon"></img>
+            <img width={26} height={26} src={heartIcon} alt="heartIcon"></img>
+            <img width={26} height={26} src={cartIcon} alt="cartIcon"></img>
             <img width={26} height={26} src={reloadIcon} alt="reloadIcon"></img>
           </div>
         </div>
