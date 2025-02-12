@@ -51,8 +51,68 @@
   margin: 6px;
   transition: transform 300ms, opacity 500ms;
 }
-
 .menu:hover::after {
   opacity: 1;
   transform: scale(1);
+}
+
+/* Hiệu ứng slide cho form đăng nhập/đăng ký */
+.slideOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+}
+
+.slidePanel {
+  position: fixed;
+  top: 0;
+  right: -400px;
+  width: 350px;
+  height: 100vh;
+  background: white;
+  box-shadow: -5px 0px 15px rgba(0, 0, 0, 0.2);
+  transition: right 0.3s ease-in-out;
+  z-index: 200;
+  padding: 20px;
+}
+
+.slidePanelOpen {
+  right: 0;
+}
+
+/* Ô tìm kiếm */
+.searchContainer {
+  position: absolute;
+  top: 90px;
+  right: 20px;
+  width: 300px;
+  background: white;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  outline: none;
+}
+
+.searchIcon {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.searchIcon:hover {
+  transform: scale(1.1);
 }
