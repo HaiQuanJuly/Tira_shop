@@ -1,4 +1,5 @@
-@import "../../assets/style/variable.module.scss";
+@use "../../assets/style/mixin.module.scss" as *;
+
 
 .registerContainer {
   background: #fff;

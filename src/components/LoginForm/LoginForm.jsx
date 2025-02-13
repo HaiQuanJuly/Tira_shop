@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PropTypes from "prop-types";
 import styles from "./styles.module.scss";
 import { login } from "../../service/authService";
 
@@ -9,17 +10,19 @@ const LoginForm = ({ closeForm }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("🔍 Gửi yêu cầu đăng nhập:", { username, password });
+    console.log("Login request:", { username, password });
 
     try {
       const userData = await login(username, password);
-      console.log("✅ Đăng nhập thành công, user:", userData);
+      console.log("Login successful:", userData);
 
       localStorage.setItem("user", JSON.stringify(userData));
-      closeForm();
+      if (typeof closeForm === "function") {
+        closeForm();
+      }
       window.location.reload();
     } catch (err) {
-      console.error("❌ Lỗi đăng nhập:", err.message);
+      console.error("Login error:", err.message);
       setError(err.message);
     }
   };
@@ -56,6 +59,10 @@ const LoginForm = ({ closeForm }) => {
       </form>
     </div>
   );
+};
+
+LoginForm.propTypes = {
+  closeForm: PropTypes.func.isRequired,
 };
 
 export default LoginForm;
