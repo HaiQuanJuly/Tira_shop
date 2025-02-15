@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import BoxIcon from "./BoxIcon/BoxIcon";
 import Menu from "./Menu/Menu";
-import { dataBoxIcon, dataMenu } from "./constants";
+import { dataMenu } from "./constants";
 import styles from "./styles.module.scss";
 import Logo from "../../assets/icons/images/Logo-retina.png";
-import heartIcon from "../../assets/icons/svgs/heartIcon.svg";
+import userIcon from "../../assets/icons/svgs/userIcon.svg";
 import searchIcon from "../../assets/icons/svgs/searchIcon.svg";
 import cartIcon from "../../assets/icons/svgs/cartIcon.svg";
 import LoginForm from "../LoginForm/LoginForm";
@@ -17,6 +16,8 @@ function MyHeader() {
   const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState("");
   const [showSearch, setShowSearch] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false); // Trạng thái hover vào userIcon
+  const [showShopName, setShowShopName] = useState(true); // Trạng thái tên shop
   const searchRef = useRef(null);
 
   useEffect(() => {
@@ -29,13 +30,13 @@ function MyHeader() {
 
   const handleOpenPanel = (isLoginMode) => {
     setIsLogin(isLoginMode);
-    setShowPanel(true);
-    document.body.classList.add("no-scroll");
+    setShowPanel(true); // Mở form
+    document.body.classList.add("no-scroll"); // Ngừng cuộn trang khi form mở
   };
 
   const handleClosePanel = () => {
-    setShowPanel(false);
-    document.body.classList.remove("no-scroll");
+    setShowPanel(false); // Đóng form
+    document.body.classList.remove("no-scroll"); // Khôi phục cuộn trang
   };
 
   const handleLoginSuccess = (userData) => {
@@ -56,21 +57,28 @@ function MyHeader() {
 
   const handleSearchClick = () => {
     setShowSearch(true);
+    setShowShopName(false); // Ẩn tên shop khi click vào search
     setTimeout(() => {
       searchRef.current?.focus();
     }, 100);
+  };
+
+  const handleSearchBlur = () => {
+    setShowShopName(true); // Hiện lại tên shop khi bỏ ra ngoài
   };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setShowSearch(false);
+        setShowShopName(true); // Hiện lại tên shop khi click ra ngoài
       }
     };
 
     const handleEscPress = (event) => {
       if (event.key === "Escape") {
         setShowSearch(false);
+        setShowShopName(true); // Hiện lại tên shop khi nhấn ESC
       }
     };
 
@@ -87,11 +95,11 @@ function MyHeader() {
     <div className={styles.container}>
       <div className={styles.containerHeader}>
         <div className={styles.containerBox}>
-          <div className={styles.containerBoxIcon}>
+          {/* <div className={styles.containerBoxIcon}>
             {dataBoxIcon.map((item) => (
               <BoxIcon key={item.type} type={item.type} href={item.href} />
             ))}
-          </div>
+          </div> */}
           <div className={styles.containerMenu}>
             {dataMenu.map((item) => (
               <Menu
@@ -104,11 +112,13 @@ function MyHeader() {
         </div>
 
         <div>
-          <img
-            src={Logo}
-            alt="Logo"
-            style={{ width: "153px", height: "53px" }}
-          />
+          {showShopName && (
+            <img
+              src={Logo}
+              alt="Logo"
+              style={{ width: "153px", height: "53px" }}
+            />
+          )}
         </div>
 
         <div className={styles.containerBox}>
@@ -128,40 +138,46 @@ function MyHeader() {
                   </div>
                 </>
               ) : (
-                <>
-                  <div
-                    className={styles.menu}
-                    onClick={() => handleOpenPanel(true)}
-                  >
-                    Sign In
-                  </div>
-                  <div
-                    className={styles.menu}
-                    onClick={() => handleOpenPanel(false)}
-                  >
-                    Register
-                  </div>
-                </>
+                <div
+                  className={styles.menu}
+                  onMouseEnter={() => setShowUserMenu(true)} // Khi hover vào userIcon, show menu
+                  onMouseLeave={() => setShowUserMenu(false)} // Khi rời khỏi icon, ẩn menu
+                >
+                  <img src={userIcon} alt="userIcon" width={26} height={26} />
+                  {showUserMenu && (
+                    <div className={styles.userMenu}>
+                      <button
+                        className={styles.loginPanel}
+                        onClick={() => handleOpenPanel(true)}
+                      >
+                        Login
+                      </button>
+                      <button
+                        className={styles.registerPanel}
+                        onClick={() => handleOpenPanel(false)}
+                      >
+                        Register
+                      </button>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           )}
 
-          {!showSearch && (
-            <div className={styles.containerBoxIcon}>
-              <img width={26} height={26} src={heartIcon} alt="heartIcon" />
-              <img width={26} height={26} src={cartIcon} alt="cartIcon" />
-            </div>
-          )}
-
-          {/* Search Icon */}
-          <img
-            width={26}
-            height={26}
-            src={searchIcon}
-            alt="searchIcon"
-            onClick={handleSearchClick}
-            className={styles.searchIcon}
-          />
+          <div className={styles.containerBoxIcon}>
+            {/* User Icon ở chỗ cart */}
+            <img width={26} height={26} src={cartIcon} alt="cartIcon" />
+            {/* Cart Icon ở chỗ search */}
+            <img
+              width={26}
+              height={26}
+              src={searchIcon}
+              alt="searchIcon"
+              onClick={handleSearchClick}
+              className={styles.searchIcon}
+            />
+          </div>
         </div>
       </div>
 
@@ -170,9 +186,10 @@ function MyHeader() {
         <div className={styles.searchContainer}>
           <input
             type="text"
-            placeholder="Tìm kiếm sản phẩm..."
+            placeholder="Search product..."
             ref={searchRef}
             className={styles.searchInput}
+            onBlur={handleSearchBlur} // Khi click ra ngoài ô tìm kiếm, tên shop sẽ hiện lại
           />
         </div>
       )}

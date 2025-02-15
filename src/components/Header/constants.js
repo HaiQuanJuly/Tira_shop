@@ -1,8 +1,8 @@
-const dataBoxIcon = [
-  { type: "fb", href: "#" },
-  { type: "ins", href: "#" },
-  { type: "ytb", href: "#" },
-];
+// const dataBoxIcon = [
+//   { type: "fb", href: "#" },
+//   { type: "ins", href: "#" },
+//   { type: "ytb", href: "#" },
+// ];
 
 const dataMenu = [
   { content: "Home", href: "#" },
@@ -10,4 +10,4 @@ const dataMenu = [
   { content: "About Us", href: "#" },
 ];
 
-export { dataBoxIcon, dataMenu };
+export { dataMenu };

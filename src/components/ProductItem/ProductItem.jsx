@@ -1,6 +1,6 @@
 import styles from "./styles.module.scss";
 import reloadIcon from "../../assets/icons/svgs/reloadIcon.svg";
-import heartIcon from "../../assets/icons/svgs/heartIcon.svg";
+import userIcon from "../../assets/icons/svgs/userIcon.svg";
 import cartIcon from "../../assets/icons/svgs/cartIcon.svg";
 
 function ProductItem({ src, prevSrc, name, price }) {
@@ -28,7 +28,7 @@ function ProductItem({ src, prevSrc, name, price }) {
             <img src={cartIcon}></img>
           </div>
           <div className={boxIcon}>
-            <img src={heartIcon}></img>
+            <img src={userIcon}></img>
           </div>
           <div className={boxIcon}>
             <img src={reloadIcon}></img>
