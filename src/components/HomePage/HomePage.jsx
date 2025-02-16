@@ -4,6 +4,7 @@ import Info from "../Info/Info";
 import AdvanceHeadling from "../AdvanceHeadling/AdvanceHeadling";
 import HeadingListProduct from "../HeadingListProduct/HeadingListProduct";
 import Brands from "../Brands/Brands";
+import ProductList from "../ProductItem/ProductList";
 
 function HomePage() {
   return (
@@ -14,6 +15,7 @@ function HomePage() {
       <Brands></Brands>
       <AdvanceHeadling></AdvanceHeadling>
       <HeadingListProduct></HeadingListProduct>
+      <ProductList></ProductList>
       <div
         style={{
           height: "200px",
