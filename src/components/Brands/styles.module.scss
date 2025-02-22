@@ -7,4 +7,5 @@
 
 .container_Img {
   @include flex_box_custom(space-between, center, 10px);
+  cursor: pointer;
 }

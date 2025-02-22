@@ -1,6 +1,7 @@
-import CoutdownBanner from "../CoutdownBanner/CoutdownBanner";
+// import CoutdownBanner from "../CoutdownBanner/CoutdownBanner";
 import MainLayout from "../Layout/Layout";
-import ProductItem from "../ProductItem/ProductItem";
+import ProductList from "../ProductItem/ProductList";
+// import ProductItem from "../ProductItem/ProductItem";
 import styles from "./styles.module.scss";
 
 function HeadingListProduct() {
@@ -8,10 +9,10 @@ function HeadingListProduct() {
   return (
     <MainLayout>
       <div className={container}>
-        <CoutdownBanner></CoutdownBanner>
+        <ProductList></ProductList>
         <div className={containerItem}>
-          <ProductItem></ProductItem>
-          <ProductItem></ProductItem>
+          {/* <ProductItem></ProductItem>
+          <ProductItem></ProductItem> */}
         </div>
       </div>
     </MainLayout>
