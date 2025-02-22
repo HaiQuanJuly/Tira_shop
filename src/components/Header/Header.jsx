@@ -55,7 +55,7 @@ function MyHeader() {
 
   return (
     <div>
-      {/* Background mờ khi mở menu */}
+      {/* Hiển thị overlay khi mở menu */}
       {isMenuOpen && (
         <div
           className={styles.overlay}
@@ -149,7 +149,7 @@ function MyHeader() {
           {/* Hiển thị "Đăng xuất" chỉ trong thanh Bar */}
           {isAuthenticated && (
             <li onClick={handleLogout} className={styles.logoutItem}>
-              Logout
+              Đăng xuất
             </li>
           )}
 
