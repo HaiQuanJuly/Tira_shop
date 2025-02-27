@@ -27,54 +27,119 @@ function MyHeader() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Hàm xử lý logout
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setIsAuthenticated(false);
+    setIsMenuOpen(false);
+  };
+
   return (
     <>
       {/* Header xuất hiện khi scroll */}
-      <header className={`${styles.header} ${isScrolled ? styles.fixedHeader : ""}`}>
-        <h1 className={`${styles.headerTitle} ${isScrolled ? styles.showHeaderTitle : ""}`}>TIRA</h1>
-        <div className={`${styles.iconBox} ${isScrolled ? styles.showIcons : ""}`}>
-          <img src={userIcon} alt="User Icon" className={styles.headerIcon} onClick={() => navigate("/auth")} />
+      <header
+        className={`${styles.header} ${isScrolled ? styles.fixedHeader : ""}`}
+      >
+        <h1
+          className={`${styles.headerTitle} ${
+            isScrolled ? styles.showHeaderTitle : ""
+          }`}
+        >
+          TIRA
+        </h1>
+        <div
+          className={`${styles.iconBox} ${isScrolled ? styles.showIcons : ""}`}
+        >
+          {!isAuthenticated && (
+            <img
+              src={userIcon}
+              alt="User Icon"
+              className={styles.headerIcon}
+              onClick={() => navigate("/auth")}
+            />
+          )}
           <img src={cartIcon} alt="Cart Icon" className={styles.headerIcon} />
-          <img src={searchIcon} alt="Search Icon" className={styles.headerIcon} />
-          <img src={barIcon} alt="Menu Icon" className={styles.headerIcon} onClick={() => setIsMenuOpen(true)} />
+          <img
+            src={searchIcon}
+            alt="Search Icon"
+            className={styles.headerIcon}
+          />
+          <img
+            src={barIcon}
+            alt="Menu Icon"
+            className={styles.headerIcon}
+            onClick={() => setIsMenuOpen(true)}
+          />
         </div>
       </header>
 
       {/* Banner Section */}
       <div className={styles.banner}>
         <img src={bannerGucci} className={styles.bannerImage} alt="Banner" />
-        <div className={`${styles.bannerOverlay} ${isScrolled ? styles.hidden : ""}`}>
+        <div
+          className={`${styles.bannerOverlay} ${
+            isScrolled ? styles.hidden : ""
+          }`}
+        >
           <h1 className={styles.bannerTitle}>TIRA</h1>
         </div>
-        <div className={`${styles.bannerIcons} ${isScrolled ? styles.flyUp : ""}`}>
-          <img src={userIcon} alt="User Icon" className={styles.bannerIcon} onClick={() => navigate("/auth")} />
+        <div
+          className={`${styles.bannerIcons} ${isScrolled ? styles.flyUp : ""}`}
+        >
+          {!isAuthenticated && (
+            <img
+              src={userIcon}
+              alt="User Icon"
+              className={styles.bannerIcon}
+              onClick={() => navigate("/auth")}
+            />
+          )}
           <img src={cartIcon} alt="Cart Icon" className={styles.bannerIcon} />
-          <img src={searchIcon} alt="Search Icon" className={styles.bannerIcon} />
-          <img src={barIcon} alt="Menu Icon" className={styles.bannerIcon} onClick={() => setIsMenuOpen(true)} />
+          <img
+            src={searchIcon}
+            alt="Search Icon"
+            className={styles.bannerIcon}
+          />
+          <img
+            src={barIcon}
+            alt="Menu Icon"
+            className={styles.bannerIcon}
+            onClick={() => setIsMenuOpen(true)}
+          />
         </div>
       </div>
 
+      {/* Overlay để làm mờ background khi sidebar mở */}
+      <div
+        className={`${styles.overlay} ${isMenuOpen ? styles.show : ""}`}
+        onClick={() => setIsMenuOpen(false)}
+      ></div>
+
       {/* Sidebar Menu */}
-      {isMenuOpen && (
-        <div className={styles.sidebarMenu}>
-          <button className={styles.closeBtn} onClick={() => setIsMenuOpen(false)}>
-            <img src={closeIcon} alt="Close" />
-          </button>
-          <ul className={styles.menuList}>
-            <li>Gucci</li>
-            <li>Calvin</li>
-            <li>Versace</li>
-            <li>Zara</li>
-            <li>Women</li>
-            <li>Men</li>
-            <li>Children</li>
-            {!isAuthenticated && <li onClick={() => navigate("/auth")}>Sign In</li>}
-            {isAuthenticated && <li onClick={() => setIsAuthenticated(false)}>Logout</li>}
-            <li>My Orders</li>
-            <li>Contact Us</li>
-          </ul>
-        </div>
-      )}
+      <div className={`${styles.sidebarMenu} ${isMenuOpen ? styles.open : ""}`}>
+        <button
+          className={styles.closeBtn}
+          onClick={() => setIsMenuOpen(false)}
+        >
+          <img src={closeIcon} alt="Close" />
+        </button>
+        <ul className={styles.menuList}>
+          <li>Gucci</li>
+          <li>Calvin</li>
+          <li>Versace</li>
+          <li>Zara</li>
+          <li>Women</li>
+          <li>Men</li>
+          <li>Children</li>
+          {!isAuthenticated ? (
+            <li onClick={() => navigate("/auth")}>Sign In</li>
+          ) : (
+            <li onClick={handleLogout}>Logout</li>
+          )}
+          <li>My Orders</li>
+          <li>Contact Us</li>
+        </ul>
+      </div>
     </>
   );
 }

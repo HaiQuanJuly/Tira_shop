@@ -4,7 +4,7 @@
   top: 0;
   left: 0;
   width: 100%;
-  padding: 15px 30px;
+  padding: 0 -100px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -28,6 +28,72 @@
   transform: translateX(-50%);
   transition: opacity 0.3s ease-in-out;
   opacity: 0;
+}
+.sidebarMenu {
+  position: fixed;
+  top: 0;
+  right: -300px; /* Ẩn menu ban đầu */
+  width: 300px;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 20px;
+  transition: right 0.3s ease-in-out; /* Hiệu ứng trượt */
+  display: none; /* Ẩn hoàn toàn khi chưa mở */
+  flex-direction: column;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Khi menu mở thì hiển thị */
+.sidebarMenu.open {
+  right: 0; /* Trượt vào khi mở */
+  display: flex; /* Hiện menu */
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.menuList {
+  list-style: none;
+  padding: 0;
+  margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.menuList li {
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.menuList li:hover {
+  color: #ffcc00;
+}
+
+/* Background mờ khi mở menu */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: none;
+}
+
+.overlay.show {
+  display: block;
 }
 
 /* Chữ "TIRA" chỉ hiện khi scroll */
@@ -115,8 +181,8 @@
 /* ===================== Banner Icons ===================== */
 .bannerIcons {
   position: absolute;
-  top: 20px;
-  right: 30px;
+  top: 70px;
+  right: 100px;
   display: flex;
   gap: 20px;
   z-index: 3;
