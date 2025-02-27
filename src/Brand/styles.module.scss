@@ -1,0 +1,28 @@
+@import "../assets/style/variable.module.scss";
+@import "../assets/style/mixin.module.scss";
+@import "../assets/style/global.module.scss";
+
+.title {
+  text-align: center;
+  font-weight: 400;
+  padding: 50px;
+}
+
+.container {
+  margin: 0 120px;
+  .brand {
+    @include flex_box_custom(center, center, 50px);
+
+    .imgBrand {
+      height: 550px;
+      width: 400px;
+      cursor: pointer;
+    }
+
+    .name_brand {
+      color: #000;
+      font-size: 20px;
+      text-align: center;
+    }
+  }
+}
