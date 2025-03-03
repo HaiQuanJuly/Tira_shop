@@ -12,7 +12,7 @@ function AuthPage() {
     phoneNumber: "",
     firstName: "",
     lastName: "",
-    gender: "Male",
+    gender: "",
     dateOfBirth: "",
   });
 

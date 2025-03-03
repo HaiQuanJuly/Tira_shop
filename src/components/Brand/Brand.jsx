@@ -1,8 +1,8 @@
 import styles from "./styles.module.scss";
-import bag from "../assets/icons/images/Bag.jpg";
-import shose from "../assets/icons/images/Shose.webp";
-import sneaker from "../assets/icons/images/Sneaker.jpg";
-import handleBag from "../assets/icons/images/HandleBag.webp";
+import bag from "../../assets/icons/images/Bag.jpg";
+import shose from "../../assets/icons/images/Shose.webp";
+import sneaker from "../../assets/icons/images/Sneaker.jpg";
+import handleBag from "../../assets/icons/images/HandleBag.webp";
 
 export default function Brand() {
   return (

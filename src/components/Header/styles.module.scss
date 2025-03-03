@@ -33,11 +33,11 @@
   position: fixed;
   top: 0;
   right: -300px; /* Ẩn menu ban đầu */
-  width: 300px;
+  width: 400px;
   height: 100%;
   background: rgba(0, 0, 0, 0.9);
   color: white;
-  padding: 20px;
+  padding: 0;
   transition: right 0.3s ease-in-out; /* Hiệu ứng trượt */
   display: none; /* Ẩn hoàn toàn khi chưa mở */
   flex-direction: column;

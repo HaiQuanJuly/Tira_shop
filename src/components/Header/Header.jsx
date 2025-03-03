@@ -10,6 +10,7 @@ import bannerGucci from "../../assets/icons/images/bannerGucci.png";
 
 function MyHeader() {
   const navigate = useNavigate();
+  const navigateCart = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -55,7 +56,7 @@ function MyHeader() {
               src={userIcon}
               alt="User Icon"
               className={styles.headerIcon}
-              onClick={() => navigate("/auth")}
+              onClick={() => navigateCart("/auth")}
             />
           )}
           <img src={cartIcon} alt="Cart Icon" className={styles.headerIcon} />
@@ -94,7 +95,12 @@ function MyHeader() {
               onClick={() => navigate("/auth")}
             />
           )}
-          <img src={cartIcon} alt="Cart Icon" className={styles.bannerIcon} />
+          <img
+            src={cartIcon}
+            alt="Cart Icon"
+            className={styles.bannerIcon}
+            onClick={() => navigate("/cart")}
+          />
           <img
             src={searchIcon}
             alt="Search Icon"
@@ -128,14 +134,12 @@ function MyHeader() {
           <li>Calvin</li>
           <li>Versace</li>
           <li>Zara</li>
-          <li>Women</li>
-          <li>Men</li>
-          <li>Children</li>
           {!isAuthenticated ? (
             <li onClick={() => navigate("/auth")}>Sign In</li>
           ) : (
             <li onClick={handleLogout}>Logout</li>
           )}
+          <li>My Account</li>
           <li>My Orders</li>
           <li>Contact Us</li>
         </ul>

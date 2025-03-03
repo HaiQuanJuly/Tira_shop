@@ -1,13 +1,24 @@
 @import "../../assets/style/mixin.module.scss";
 @import "../../assets/style/variable.module.scss";
 
+.bestProduct {
+  font-size: 30px;
+  text-align: center;
+  color: #000;
+  font-weight: 300;
+  letter-spacing: 10px;
+}
+.container {
+  @include flex_box_custom(center, center, 30px);
+}
 .productGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 30px;
+  display: flex;
+  // grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  // gap: 30px;
   padding: 40px;
-  max-width: 1200px;
-  margin: 0 auto;
+  // max-width: 1200px;
+  margin: 20px;
+  @include flex_box_custom(center, center, 30px);
 }
 
 .productItem {
@@ -21,7 +32,7 @@
 
 .boxImg {
   width: 100%;
-  height: 300px;
+  aspect-ratio: 4 / 3; // Đảm bảo ảnh luôn có tỷ lệ phù hợp
   position: relative;
   overflow: hidden;
   border-radius: 10px;
@@ -29,7 +40,7 @@
   img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: cover; // Giữ tỷ lệ ảnh và không bị méo
     transition: opacity 0.5s ease-in-out;
   }
 
@@ -44,7 +55,21 @@
     left: 0;
     width: 100%;
     height: 100%;
+    object-fit: cover;
     border-radius: 10px;
+  }
+}
+
+/* Responsive để tối ưu trên mọi thiết bị */
+@media (max-width: 1024px) {
+  .boxImg {
+    aspect-ratio: 1 / 1; // Trên tablet, giữ tỷ lệ vuông
+  }
+}
+
+@media (max-width: 768px) {
+  .boxImg {
+    aspect-ratio: 3 / 4; // Trên mobile, ảnh có thể dài hơn
   }
 }
 
@@ -65,4 +90,25 @@
   font-size: 14px;
   color: $thr_color;
   font-weight: 500;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 30px;
+}
+
+.button {
+  padding: 10px 20px;
+  font-size: 18px;
+  background-color: #fff;
+  color: black;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  &:hover {
+    background-color: #000;
+    color: #fff;
+  }
 }
