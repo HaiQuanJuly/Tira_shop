@@ -7,18 +7,33 @@ import searchIcon from "../../assets/icons/svgs/searchIcon.svg";
 import barIcon from "../../assets/icons/svgs/bar.svg";
 import closeIcon from "../../assets/icons/svgs/close.svg";
 import bannerGucci from "../../assets/icons/images/bannerGucci.png";
+import ProductList from "../ProductItem/ProductList";
+import Cart from "../Cart/Cart"; // Import Cart component
 
 function MyHeader() {
   const navigate = useNavigate();
-  const navigateCart = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [cart, setCart] = useState([]); // Giỏ hàng state
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State để điều khiển mở đóng sidebar
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     setIsAuthenticated(!!token);
   }, []);
+
+  const handleAddToCart = (product) => {
+    setCart([...cart, product]); // Thêm sản phẩm vào giỏ
+  };
+
+  const handleCartClick = () => {
+    setIsSidebarOpen(true); // Mở sidebar giỏ hàng khi click vào giỏ hàng
+  };
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false); // Đóng sidebar
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,7 +43,6 @@ function MyHeader() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Hàm xử lý logout
   const handleLogout = () => {
     localStorage.removeItem("token");
     setIsAuthenticated(false);
@@ -56,10 +70,15 @@ function MyHeader() {
               src={userIcon}
               alt="User Icon"
               className={styles.headerIcon}
-              onClick={() => navigateCart("/auth")}
+              onClick={() => navigate("/auth")}
             />
           )}
-          <img src={cartIcon} alt="Cart Icon" className={styles.headerIcon} />
+          <div className={styles.cartContainer} onClick={handleCartClick}>
+            <img src={cartIcon} alt="Cart Icon" className={styles.headerIcon} />
+            {cart.length > 0 && (
+              <span className={styles.cartCount}>{cart.length}</span>
+            )}
+          </div>
           <img
             src={searchIcon}
             alt="Search Icon"
@@ -99,7 +118,7 @@ function MyHeader() {
             src={cartIcon}
             alt="Cart Icon"
             className={styles.bannerIcon}
-            onClick={() => navigate("/cart")}
+            onClick={handleCartClick} // Mở sidebar giỏ hàng
           />
           <img
             src={searchIcon}
@@ -117,9 +136,22 @@ function MyHeader() {
 
       {/* Overlay để làm mờ background khi sidebar mở */}
       <div
-        className={`${styles.overlay} ${isMenuOpen ? styles.show : ""}`}
-        onClick={() => setIsMenuOpen(false)}
+        className={`${styles.overlay} ${isSidebarOpen ? styles.show : ""}`}
+        onClick={closeSidebar}
       ></div>
+
+      {/* Sidebar giỏ hàng */}
+      <Cart
+        isSidebarOpen={isSidebarOpen}
+        closeSidebar={closeSidebar}
+        cart={cart}
+        handleRemoveItem={(productId) => {
+          const updatedCart = cart.filter(
+            (item) => item.productId !== productId
+          );
+          setCart(updatedCart);
+        }}
+      />
 
       {/* Sidebar Menu */}
       <div className={`${styles.sidebarMenu} ${isMenuOpen ? styles.open : ""}`}>
@@ -144,6 +176,8 @@ function MyHeader() {
           <li>Contact Us</li>
         </ul>
       </div>
+
+      <ProductList handleAddToCart={handleAddToCart} />
     </>
   );
 }

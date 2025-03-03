@@ -1,6 +1,4 @@
 import MyHeader from "../Header/Header";
-// import HeadingListProduct from "../HeadingListProduct/HeadingListProduct";
-import ProductList from "../ProductItem/ProductList";
 import Footer from "../Footer/Footer";
 import Brand from "../Brand/Brand";
 import Men from "../Men/BannerGucciMen";
@@ -15,7 +13,6 @@ function HomePage() {
       <Men></Men>
       <Sneaker></Sneaker>
       <Women></Women>
-      <ProductList></ProductList>
       <Footer></Footer>
     </>
   );

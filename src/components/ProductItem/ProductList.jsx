@@ -1,32 +1,24 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./styles.module.scss";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+
 const responsive = {
-  superLargeDesktop: {
-    // the naming can be any, depends on you.
-    breakpoint: { max: 4000, min: 3000 },
-    items: 5,
-  },
-  desktop: {
-    breakpoint: { max: 3000, min: 1024 },
-    items: 5,
-  },
-  tablet: {
-    breakpoint: { max: 1024, min: 464 },
-    items: 2,
-  },
-  mobile: {
-    breakpoint: { max: 464, min: 0 },
-    items: 1,
-  },
+  superLargeDesktop: { breakpoint: { max: 4000, min: 3000 }, items: 5 },
+  desktop: { breakpoint: { max: 3000, min: 1024 }, items: 5 },
+  tablet: { breakpoint: { max: 1024, min: 464 }, items: 2 },
+  mobile: { breakpoint: { max: 464, min: 0 }, items: 1 },
 };
-function ProductList() {
+
+function ProductList({ handleAddToCart }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    // Fetch products from API
     fetch("http://localhost:8080/tirashop/product")
       .then((response) => response.json())
       .then((data) => {
@@ -43,6 +35,11 @@ function ProductList() {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
+  const handleProductClick = (productId) => {
+    // Navigate to product detail page
+    navigate(`/product/${productId}`);
+  };
+
   return (
     <div>
       <p className={styles.bestProduct}>_Our best product_</p>
@@ -50,7 +47,10 @@ function ProductList() {
         <Carousel responsive={responsive} className={styles.productGrid}>
           {products.map((product) => (
             <div key={product.id} className={styles.productItem}>
-              <div className={styles.boxImg}>
+              <div
+                className={styles.boxImg}
+                onClick={() => handleProductClick(product.id)} // Navigate to detail page
+              >
                 <img
                   src={
                     product.imageUrls && product.imageUrls.length > 0
@@ -59,13 +59,6 @@ function ProductList() {
                   }
                   alt={product.name || "Unnamed Product"}
                 />
-                {product.imageUrls && product.imageUrls.length > 1 && (
-                  <img
-                    src={`http://localhost:8080${product.imageUrls[1]}`}
-                    className={styles.showImgWhenHover}
-                    alt="hover"
-                  />
-                )}
               </div>
               <div className={styles.title}>
                 {product.name || "Unnamed Product"}
@@ -77,6 +70,12 @@ function ProductList() {
               <div className={styles.priceCl}>
                 ${product.price ? product.price.toFixed(2) : "N/A"}
               </div>
+              <button
+                onClick={() => handleAddToCart(product)} // Add product to cart
+                className={styles.addToCartBtn}
+              >
+                Add to Cart
+              </button>
             </div>
           ))}
         </Carousel>
