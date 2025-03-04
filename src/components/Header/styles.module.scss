@@ -29,36 +29,6 @@
   transition: opacity 0.3s ease-in-out;
   opacity: 0;
 }
-.sidebarMenu {
-  position: fixed;
-  top: 0;
-  right: -300px; /* Ẩn menu ban đầu */
-  width: 400px;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.9);
-  color: white;
-  padding: 0;
-  transition: right 0.3s ease-in-out; /* Hiệu ứng trượt */
-  display: none; /* Ẩn hoàn toàn khi chưa mở */
-  flex-direction: column;
-  align-items: center;
-  z-index: 1000;
-}
-
-/* Khi menu mở thì hiển thị */
-.sidebarMenu.open {
-  right: 0; /* Trượt vào khi mở */
-  display: flex; /* Hiện menu */
-}
-
-// .closeBtn {
-//   background: none;
-//   border: none;
-//   cursor: pointer;
-//   position: absolute;
-//   top: 10px;
-//   right: 10px;
-// }
 
 .menuList {
   list-style: none;
@@ -78,22 +48,6 @@
 
 .menuList li:hover {
   color: #ffcc00;
-}
-
-/* Background mờ khi mở menu */
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 999;
-  display: none;
-}
-
-.overlay.show {
-  display: block;
 }
 
 /* Chữ "TIRA" chỉ hiện khi scroll */
@@ -195,19 +149,6 @@
   opacity: 0;
 }
 
-/* ===================== Banner Icon ===================== */
-.bannerIcon {
-  width: 35px;
-  height: 35px;
-  filter: brightness(0) invert(1);
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
-.bannerIcon:hover {
-  transform: scale(1.1);
-}
-
 .cartSidebar {
   position: fixed;
   top: 0;
@@ -218,19 +159,14 @@
   box-shadow: -2px 0px 10px rgba(0, 0, 0, 0.2);
   transition: right 0.3s ease-in-out;
   padding: 20px;
-  z-index: 100;
+  z-index: 1001;
 }
 
-.closeBtn {
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  position: absolute;
-  top: 20px;
-  left: 20px;
+.cartSidebar.open {
+  right: 0;
 }
 
+/* ===================== Cart Items ===================== */
 .cartItem {
   display: flex;
   padding: 15px;
@@ -269,4 +205,95 @@ button {
 
 button:hover {
   background-color: #b30000;
+}
+
+/* ===================== Sidebar Overlay (Nền tối khi sidebar mở) ===================== */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Nền tối */
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+.overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ===================== Sidebar Menu ===================== */
+.sidebarMenu {
+  position: fixed;
+  top: 0;
+  right: -500px;
+  width: 400px;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 20px;
+  transition: right 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1001;
+}
+
+.sidebarMenu.open {
+  right: 0;
+}
+
+/* ===================== Close Button (Nút đóng Sidebar) ===================== */
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  color: white;
+  transition: color 0.3s ease-in-out;
+}
+
+.closeBtn img {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) invert(1); /* Chuyển icon thành màu trắng */
+  transition: filter 0.3s ease-in-out;
+}
+
+.closeBtn:hover {
+  color: #ffcc00; /* Hover đổi màu vàng */
+}
+
+.closeBtn:hover img {
+  filter: brightness(1) invert(0);
+}
+
+/* ===================== Banner Icons (Hiển thị icon đúng cách) ===================== */
+.bannerIcons {
+  position: absolute;
+  top: 70px;
+  right: 100px;
+  display: flex;
+  gap: 20px;
+  z-index: 3;
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.bannerIcon {
+  width: 35px;
+  height: 35px;
+  filter: brightness(0) invert(1);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.bannerIcon:hover {
+  transform: scale(1.1);
 }

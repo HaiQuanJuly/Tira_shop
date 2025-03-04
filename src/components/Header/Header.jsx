@@ -8,31 +8,47 @@ import barIcon from "../../assets/icons/svgs/bar.svg";
 import closeIcon from "../../assets/icons/svgs/close.svg";
 import bannerGucci from "../../assets/icons/images/bannerGucci.png";
 import ProductList from "../ProductItem/ProductList";
-import Cart from "../Cart/Cart"; // Import Cart component
+import Cart from "../Cart/Cart";
 
 function MyHeader() {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [cart, setCart] = useState([]); // Giỏ hàng state
+  const [cart, setCart] = useState([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State để điều khiển mở đóng sidebar
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     setIsAuthenticated(!!token);
   }, []);
 
-  const handleAddToCart = (product) => {
-    setCart([...cart, product]); // Thêm sản phẩm vào giỏ
+  const handleAddToCart = (product, selectedSize) => {
+    const existingProductIndex = cart.findIndex(
+      (item) => item.id === product.id && item.size === selectedSize
+    );
+
+    if (existingProductIndex !== -1) {
+      const updatedCart = [...cart];
+      updatedCart[existingProductIndex].stock += 1; // Cập nhật số lượng nếu sản phẩm cùng size đã có trong giỏ
+      setCart(updatedCart);
+    } else {
+      setCart([...cart, { ...product, stock: 1, size: selectedSize }]); // Thêm sản phẩm với size đã chọn
+    }
   };
 
   const handleCartClick = () => {
-    setIsSidebarOpen(true); // Mở sidebar giỏ hàng khi click vào giỏ hàng
+    setIsSidebarOpen(true);
   };
 
   const closeSidebar = () => {
-    setIsSidebarOpen(false); // Đóng sidebar
+    setIsSidebarOpen(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setIsAuthenticated(false);
+    setIsMenuOpen(false);
   };
 
   useEffect(() => {
@@ -43,15 +59,8 @@ function MyHeader() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setIsAuthenticated(false);
-    setIsMenuOpen(false);
-  };
-
   return (
     <>
-      {/* Header xuất hiện khi scroll */}
       <header
         className={`${styles.header} ${isScrolled ? styles.fixedHeader : ""}`}
       >
@@ -93,7 +102,6 @@ function MyHeader() {
         </div>
       </header>
 
-      {/* Banner Section */}
       <div className={styles.banner}>
         <img src={bannerGucci} className={styles.bannerImage} alt="Banner" />
         <div
@@ -118,7 +126,7 @@ function MyHeader() {
             src={cartIcon}
             alt="Cart Icon"
             className={styles.bannerIcon}
-            onClick={handleCartClick} // Mở sidebar giỏ hàng
+            onClick={handleCartClick}
           />
           <img
             src={searchIcon}
@@ -134,26 +142,34 @@ function MyHeader() {
         </div>
       </div>
 
-      {/* Overlay để làm mờ background khi sidebar mở */}
       <div
         className={`${styles.overlay} ${isSidebarOpen ? styles.show : ""}`}
         onClick={closeSidebar}
+        style={{
+          opacity: isSidebarOpen ? 1 : 0,
+          visibility: isSidebarOpen ? "visible" : "hidden",
+        }}
       ></div>
 
-      {/* Sidebar giỏ hàng */}
       <Cart
         isSidebarOpen={isSidebarOpen}
         closeSidebar={closeSidebar}
         cart={cart}
-        handleRemoveItem={(productId) => {
-          const updatedCart = cart.filter(
-            (item) => item.productId !== productId
-          );
+        handleUpdateQuantity={(id, newStock) => {
+          const updatedCart = cart.map((item) => {
+            if (item.id === id) {
+              return { ...item, stock: newStock };
+            }
+            return item;
+          });
+          setCart(updatedCart);
+        }}
+        handleRemoveItem={(id) => {
+          const updatedCart = cart.filter((item) => item.id !== id);
           setCart(updatedCart);
         }}
       />
 
-      {/* Sidebar Menu */}
       <div className={`${styles.sidebarMenu} ${isMenuOpen ? styles.open : ""}`}>
         <button
           className={styles.closeBtn}

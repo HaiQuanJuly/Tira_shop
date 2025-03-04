@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as Components from "../Auth/Component.js";
-
 function AuthPage() {
   const [signIn, setSignIn] = useState(true);
   const [formData, setFormData] = useState({

@@ -15,10 +15,10 @@ function ProductList({ handleAddToCart }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedSize, setSelectedSize] = useState("M"); // Mặc định là M
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch products from API
     fetch("http://localhost:8080/tirashop/product")
       .then((response) => response.json())
       .then((data) => {
@@ -32,13 +32,12 @@ function ProductList({ handleAddToCart }) {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
-
   const handleProductClick = (productId) => {
-    // Navigate to product detail page
     navigate(`/product/${productId}`);
   };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div>
@@ -49,7 +48,7 @@ function ProductList({ handleAddToCart }) {
             <div key={product.id} className={styles.productItem}>
               <div
                 className={styles.boxImg}
-                onClick={() => handleProductClick(product.id)} // Navigate to detail page
+                onClick={() => handleProductClick(product.id)}
               >
                 <img
                   src={
@@ -70,8 +69,22 @@ function ProductList({ handleAddToCart }) {
               <div className={styles.priceCl}>
                 ${product.price ? product.price.toFixed(2) : "N/A"}
               </div>
+              {/* Thêm phần lựa chọn size */}
+              <div className={styles.sizeSelector}>
+                <label>Select Size:</label>
+                <select
+                  onChange={(e) => setSelectedSize(e.target.value)}
+                  value={selectedSize}
+                >
+                  <option value="S">S</option>
+                  <option value="M">M</option>
+                  <option value="L">L</option>
+                </select>
+              </div>
               <button
-                onClick={() => handleAddToCart(product)} // Add product to cart
+                onClick={
+                  () => handleAddToCart(product, selectedSize) // Thêm size vào giỏ hàng
+                }
                 className={styles.addToCartBtn}
               >
                 Add to Cart

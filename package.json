@@ -20,6 +20,7 @@
     "react-multi-carousel": "^2.8.5",
     "react-router-dom": "^7.2.0",
     "react-sidebar": "^3.0.2",
+    "react-toastify": "^11.0.5",
     "styled-components": "^6.1.15"
   },
   "devDependencies": {
