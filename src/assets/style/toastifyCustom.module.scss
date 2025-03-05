@@ -1,0 +1,45 @@
+@import "react-toastify/dist/ReactToastify.css";
+
+:global {
+  .Toastify__toast {
+    background: #000 !important; // Nền đen
+    color: #fff !important; // Chữ trắng
+    border: 1px solid #d4af37 !important; // Viền vàng
+    border-radius: 8px !important;
+    padding: 15px !important;
+    font-size: 1rem !important;
+    font-weight: 500 !important;
+  }
+
+  .Toastify__toast--success {
+    background: #000 !important;
+    border-left: 5px solid #d4af37 !important; // Viền trái vàng cho thông báo thành công
+  }
+
+  .Toastify__toast--error {
+    background: #000 !important;
+    border-left: 5px solid #c8102e !important; // Viền trái đỏ cho thông báo lỗi
+  }
+
+  .Toastify__toast-body {
+    display: flex;
+    align-items: center;
+  }
+
+  .Toastify__progress-bar {
+    background: #d4af37 !important; // Thanh tiến trình vàng
+  }
+
+  .Toastify__close-button {
+    color: #fff !important;
+    opacity: 0.7 !important;
+
+    &:hover {
+      opacity: 1 !important;
+    }
+  }
+
+  .Toastify__toast-icon {
+    margin-right: 10px !important;
+  }
+}

@@ -1,299 +1,162 @@
-/* ===================== Header ===================== */
 .header {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  padding: 0 -100px;
+  background: transparent;
+  padding: 15px 30px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  transition: all 0.3s ease-in-out;
   z-index: 1000;
+  transition: all 0.3s ease;
+
+  &.fixedHeader {
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+  }
+
+  .headerTitle {
+    font-size: 2rem; // Tăng kích thước chữ từ 1.5rem lên 2rem
+    font-weight: bold;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    letter-spacing: 5px; // Thêm khoảng cách giữa các chữ cái
+
+    &.showHeaderTitle {
+      opacity: 1;
+    }
+  }
+
+  .iconBox {
+    position: absolute;
+    top: 100px;
+    bottom: 30px;
+    right: 200px; // Tăng khoảng cách từ mép phải lên 50px
+    display: flex;
+    gap: 20px;
+    transition: all 0.3s ease;
+
+    &.flyUp {
+      bottom: auto;
+      top: 40px;
+      right: 150px; // Giữ khoảng cách từ mép phải khi "fly up"
+    }
+
+    .headerIcon {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      filter: invert(100%); // Icon màu trắng
+    }
+
+    .cartContainer {
+      position: relative;
+
+      .cartCount {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: red;
+        color: white;
+        border-radius: 50%;
+        padding: 2px 6px;
+        font-size: 0.8rem;
+        font-weight: bold;
+      }
+    }
+  }
 }
 
-/* Khi scroll header cố định */
-.fixedHeader {
-  background-color: rgba(255, 255, 255, 0.9);
-  height: 60px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* ===================== Header Title ===================== */
-.headerTitle {
-  font-size: 1.8rem; /* Giảm kích thước TIRA */
-  font-weight: 300; /* Chữ mỏng hơn */
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  transition: opacity 0.3s ease-in-out;
-  opacity: 0;
-}
-
-.menuList {
-  list-style: none;
-  padding: 0;
-  margin-top: 50px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.menuList li {
-  cursor: pointer;
-  font-size: 18px;
-  font-weight: bold;
-  transition: 0.3s;
-}
-
-.menuList li:hover {
-  color: #ffcc00;
-}
-
-/* Chữ "TIRA" chỉ hiện khi scroll */
-.showHeaderTitle {
-  opacity: 1;
-}
-
-/* ===================== Icon Box ===================== */
-.iconBox {
-  position: absolute;
-  right: 30px;
-  display: flex;
-  gap: 20px;
-  transition: all 0.3s;
-}
-
-/* ===================== Header Icon ===================== */
-.headerIcon {
-  width: 22px;
-  height: 22px;
-  cursor: pointer;
-  filter: brightness(0);
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  opacity: 0; /* Ẩn icon ban đầu */
-}
-
-/* Khi scroll xuống, icon mới xuất hiện */
-.showIcons .headerIcon {
-  opacity: 1;
-}
-
-/* ===================== Banner ===================== */
 .banner {
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   position: relative;
-  overflow: hidden;
-}
-
-.bannerImage {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
+  height: auto;
+
+  .bannerImage {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .bannerOverlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    transition: opacity 0.3s ease;
+
+    &.hidden {
+      opacity: 0;
+    }
+
+    .bannerTitle {
+      font-size: 4rem;
+      font-weight: bold;
+      color: white;
+    }
+  }
 }
 
-.bannerOverlay {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 2;
-  width: 100%;
-  transition: opacity 0.3s ease-in-out;
-}
-
-/* Khi scroll xuống, chữ "TIRA" trong banner biến mất */
-.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* ===================== Banner Title ===================== */
-.bannerTitle {
-  font-size: 350px; /* Làm chữ TIRA TO HƠN */
-  font-weight: 300; /* Chữ mỏng hơn */
-  color: white;
-  text-transform: uppercase;
-  letter-spacing: 10px;
-  line-height: 1;
-  width: 100%;
-  text-align: center;
-}
-
-/* ===================== Banner Icons ===================== */
-.bannerIcons {
-  position: absolute;
-  top: 70px;
-  right: 100px;
-  display: flex;
-  gap: 20px;
-  z-index: 3;
-  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-}
-
-/* Khi scroll, icon bay lên header */
-.flyUp {
-  transform: translateY(-80px);
-  opacity: 0;
-}
-
-.cartSidebar {
-  position: fixed;
-  top: 0;
-  right: -400px;
-  width: 400px;
-  height: 100%;
-  background-color: white;
-  box-shadow: -2px 0px 10px rgba(0, 0, 0, 0.2);
-  transition: right 0.3s ease-in-out;
-  padding: 20px;
-  z-index: 1001;
-}
-
-.cartSidebar.open {
-  right: 0;
-}
-
-/* ===================== Cart Items ===================== */
-.cartItem {
-  display: flex;
-  padding: 15px;
-  border-bottom: 1px solid #ddd;
-}
-
-.cartItemImage {
-  width: 80px;
-  height: 80px;
-  object-fit: cover;
-}
-
-.cartItemDetails {
-  flex-grow: 1;
-}
-
-.cartTotal {
-  padding: 20px;
-  text-align: right;
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
-.cartTotal h3 {
-  font-weight: bold;
-}
-
-button {
-  background-color: #e60000;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-button:hover {
-  background-color: #b30000;
-}
-
-/* ===================== Sidebar Overlay (Nền tối khi sidebar mở) ===================== */
 .overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5); /* Nền tối */
+  background: rgba(0, 0, 0, 0.5);
   z-index: 999;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
-.overlay.show {
-  opacity: 1;
-  visibility: visible;
-}
-
-/* ===================== Sidebar Menu ===================== */
 .sidebarMenu {
   position: fixed;
   top: 0;
-  right: -500px;
-  width: 400px;
+  right: -300px;
+  width: 300px;
   height: 100%;
-  background: rgba(0, 0, 0, 0.9);
-  color: white;
-  padding: 20px;
-  transition: right 0.3s ease-in-out;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 1001;
-}
+  background: white;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  transition: right 0.3s ease;
+  z-index: 1000;
 
-.sidebarMenu.open {
-  right: 0;
-}
+  &.open {
+    right: 0;
+  }
 
-/* ===================== Close Button (Nút đóng Sidebar) ===================== */
-.closeBtn {
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  color: white;
-  transition: color 0.3s ease-in-out;
-}
+  .closeBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 20px;
+    width: 100%;
+    text-align: right;
 
-.closeBtn img {
-  width: 24px;
-  height: 24px;
-  filter: brightness(0) invert(1); /* Chuyển icon thành màu trắng */
-  transition: filter 0.3s ease-in-out;
-}
+    img {
+      width: 24px;
+      height: 24px;
+    }
+  }
 
-.closeBtn:hover {
-  color: #ffcc00; /* Hover đổi màu vàng */
-}
+  .menuList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 
-.closeBtn:hover img {
-  filter: brightness(1) invert(0);
-}
+    li {
+      padding: 15px 20px;
+      font-size: 1.1rem;
+      color: black;
+      cursor: pointer;
+      border-bottom: 1px solid #eee;
 
-/* ===================== Banner Icons (Hiển thị icon đúng cách) ===================== */
-.bannerIcons {
-  position: absolute;
-  top: 70px;
-  right: 100px;
-  display: flex;
-  gap: 20px;
-  z-index: 3;
-  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-}
-
-.bannerIcon {
-  width: 35px;
-  height: 35px;
-  filter: brightness(0) invert(1);
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
-.bannerIcon:hover {
-  transform: scale(1.1);
+      &:hover {
+        background: #f5f5f5;
+      }
+    }
+  }
 }

@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import styles from "./styles.module.scss";
 import userIcon from "../../assets/icons/svgs/userIcon.svg";
 import cartIcon from "../../assets/icons/svgs/cartIcon.svg";
@@ -17,27 +18,176 @@ function MyHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     setIsAuthenticated(!!token);
-  }, []);
-
-  const handleAddToCart = (product, selectedSize) => {
-    const existingProductIndex = cart.findIndex(
-      (item) => item.id === product.id && item.size === selectedSize
-    );
-
-    if (existingProductIndex !== -1) {
-      const updatedCart = [...cart];
-      updatedCart[existingProductIndex].stock += 1; // Cập nhật số lượng nếu sản phẩm cùng size đã có trong giỏ
-      setCart(updatedCart);
+    if (token) {
+      fetchCart();
     } else {
-      setCart([...cart, { ...product, stock: 1, size: selectedSize }]); // Thêm sản phẩm với size đã chọn
+      setCart([]);
+    }
+  }, [isAuthenticated]);
+
+  const fetchCart = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setCart([]);
+        setIsAuthenticated(false);
+        return;
+      }
+
+      const response = await fetch("http://localhost:8080/tirashop/cart/list", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 401) {
+        localStorage.removeItem("token");
+        setIsAuthenticated(false);
+        setCart([]);
+        toast.error("Your session has expired. Please log in again.", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        navigate("/auth");
+        return;
+      }
+
+      const data = await response.json();
+      if (data.status === "success") {
+        const validSizes = ["S", "M", "L"];
+        const parsedCart = (data.data.items || []).map((item) => ({
+          ...item,
+          cartId: parseInt(item.cartId),
+          productId: parseInt(item.productId),
+          size: validSizes.includes(item.size) ? item.size : "M",
+          productImage: item.productImage
+            ? `http://localhost:8080${item.productImage}` // Chuẩn hóa đường dẫn hình ảnh
+            : null,
+        }));
+        setCart(parsedCart);
+        console.log("Fetched cart:", parsedCart);
+      } else {
+        console.error("Failed to fetch cart:", data.message);
+        setCart([]);
+      }
+    } catch (error) {
+      console.error("Error fetching cart:", error);
+      setCart([]);
+    }
+  };
+
+  const handleAddToCart = async (product, selectedSize) => {
+    if (!isAuthenticated) {
+      toast.error("Please log in to add items to cart", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      navigate("/auth");
+      return;
+    }
+
+    setIsAdding(true);
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setIsAuthenticated(false);
+        toast.error("Please log in to add items to cart", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        navigate("/auth");
+        return;
+      }
+
+      const validSizes = ["S", "M", "L"];
+      if (!validSizes.includes(selectedSize)) {
+        toast.error("Invalid size. Please select S, M, or L.", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
+
+      const parsedProductId = parseInt(product.id);
+      if (isNaN(parsedProductId)) {
+        toast.error("Invalid product ID", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
+
+      console.log("Adding to cart with:", {
+        productId: parsedProductId,
+        quantity: 1,
+        size: selectedSize,
+      });
+
+      const response = await fetch("http://localhost:8080/tirashop/cart/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          productId: parsedProductId,
+          quantity: 1,
+          size: selectedSize,
+        }),
+      });
+
+      if (response.status === 401) {
+        localStorage.removeItem("token");
+        setIsAuthenticated(false);
+        toast.error("Your session has expired. Please log in again.", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        navigate("/auth");
+        return;
+      }
+
+      const data = await response.json();
+      console.log("Response from add to cart:", data);
+
+      if (data.status === "success") {
+        await fetchCart();
+        setIsSidebarOpen(true);
+        toast.success("Product added to cart!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      } else {
+        toast.error(`Failed to add to cart: ${data.message}`, {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      }
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      toast.error("Error adding to cart. Please try again.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    } finally {
+      setIsAdding(false);
     }
   };
 
   const handleCartClick = () => {
+    if (!isAuthenticated) {
+      toast.error("Please log in to view your cart", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      navigate("/auth");
+      return;
+    }
     setIsSidebarOpen(true);
   };
 
@@ -49,6 +199,197 @@ function MyHeader() {
     localStorage.removeItem("token");
     setIsAuthenticated(false);
     setIsMenuOpen(false);
+    setCart([]);
+    toast.success("Logged out successfully!", {
+      position: "top-right",
+      autoClose: 3000,
+    });
+    navigate("/");
+  };
+
+  const handleUpdateQuantity = async (cartId, productId, newQuantity, size) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setIsAuthenticated(false);
+        toast.error("Please log in to update cart", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        navigate("/auth");
+        return;
+      }
+
+      const parsedCartId = parseInt(cartId);
+      const parsedProductId = parseInt(productId);
+      if (isNaN(parsedCartId) || isNaN(parsedProductId)) {
+        toast.error("Invalid cart ID or product ID", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
+
+      if (newQuantity < 1) {
+        toast.error("Quantity must be at least 1", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
+
+      const validSizes = ["S", "M", "L"];
+      if (!validSizes.includes(size)) {
+        toast.error("Invalid size. Please select S, M, or L.", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
+
+      console.log("Updating cart with:", {
+        cartId: parsedCartId,
+        productId: parsedProductId,
+        quantity: newQuantity,
+        size,
+      });
+
+      const response = await fetch(
+        "http://localhost:8080/tirashop/cart/update",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            cartId: parsedCartId,
+            productId: parsedProductId,
+            quantity: newQuantity,
+            size: size,
+          }),
+        }
+      );
+
+      if (response.status === 401) {
+        localStorage.removeItem("token");
+        setIsAuthenticated(false);
+        toast.error("Your session has expired. Please log in again.", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        navigate("/auth");
+        return;
+      }
+
+      const data = await response.json();
+      console.log("Response from update quantity:", data);
+
+      if (data.status === "success") {
+        await fetchCart();
+        toast.success("Quantity updated!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      } else {
+        toast.error(`Failed to update quantity: ${data.message}`, {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        await fetchCart();
+      }
+    } catch (error) {
+      console.error("Error updating quantity:", error);
+      toast.error("Error updating quantity. Please try again.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      await fetchCart();
+    }
+  };
+
+  const handleRemoveItem = async (cartId) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setIsAuthenticated(false);
+        toast.error("Please log in to remove items from cart", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        navigate("/auth");
+        return;
+      }
+
+      const parsedCartId = parseInt(cartId);
+      if (isNaN(parsedCartId)) {
+        toast.error("Invalid cart ID", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
+
+      console.log("Removing item with cartId:", parsedCartId);
+      console.log("Token being sent:", token);
+
+      const response = await fetch(
+        `http://localhost:8080/tirashop/cart/remove/${parsedCartId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 401 || response.status === 400) {
+        const data = await response.json();
+        console.log("Error response:", data);
+        if (
+          data.message.includes("User must be logged in") ||
+          response.status === 401
+        ) {
+          localStorage.removeItem("token");
+          setIsAuthenticated(false);
+          toast.error("Your session has expired. Please log in again.", {
+            position: "top-right",
+            autoClose: 3000,
+          });
+          navigate("/auth");
+          return;
+        }
+        throw new Error(data.message);
+      }
+
+      const data = await response.json();
+      console.log("Response from remove item:", data);
+
+      if (data.status === "success") {
+        await fetchCart();
+        toast.success("Item removed from cart!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      } else {
+        toast.error(`Failed to remove item: ${data.message}`, {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        await fetchCart();
+      }
+    } catch (error) {
+      console.error("Error removing item:", error);
+      toast.error(
+        `Error removing item: ${error.message || "Please try again."}`,
+        {
+          position: "top-right",
+          autoClose: 3000,
+        }
+      );
+      await fetchCart();
+    }
   };
 
   useEffect(() => {
@@ -71,9 +412,7 @@ function MyHeader() {
         >
           TIRA
         </h1>
-        <div
-          className={`${styles.iconBox} ${isScrolled ? styles.showIcons : ""}`}
-        >
+        <div className={`${styles.iconBox} ${isScrolled ? styles.flyUp : ""}`}>
           {!isAuthenticated && (
             <img
               src={userIcon}
@@ -111,35 +450,6 @@ function MyHeader() {
         >
           <h1 className={styles.bannerTitle}>TIRA</h1>
         </div>
-        <div
-          className={`${styles.bannerIcons} ${isScrolled ? styles.flyUp : ""}`}
-        >
-          {!isAuthenticated && (
-            <img
-              src={userIcon}
-              alt="User Icon"
-              className={styles.bannerIcon}
-              onClick={() => navigate("/auth")}
-            />
-          )}
-          <img
-            src={cartIcon}
-            alt="Cart Icon"
-            className={styles.bannerIcon}
-            onClick={handleCartClick}
-          />
-          <img
-            src={searchIcon}
-            alt="Search Icon"
-            className={styles.bannerIcon}
-          />
-          <img
-            src={barIcon}
-            alt="Menu Icon"
-            className={styles.bannerIcon}
-            onClick={() => setIsMenuOpen(true)}
-          />
-        </div>
       </div>
 
       <div
@@ -155,19 +465,11 @@ function MyHeader() {
         isSidebarOpen={isSidebarOpen}
         closeSidebar={closeSidebar}
         cart={cart}
-        handleUpdateQuantity={(id, newStock) => {
-          const updatedCart = cart.map((item) => {
-            if (item.id === id) {
-              return { ...item, stock: newStock };
-            }
-            return item;
-          });
-          setCart(updatedCart);
-        }}
-        handleRemoveItem={(id) => {
-          const updatedCart = cart.filter((item) => item.id !== id);
-          setCart(updatedCart);
-        }}
+        setCart={setCart}
+        handleUpdateQuantity={handleUpdateQuantity}
+        handleRemoveItem={handleRemoveItem}
+        fetchCart={fetchCart}
+        navigate={navigate}
       />
 
       <div className={`${styles.sidebarMenu} ${isMenuOpen ? styles.open : ""}`}>
@@ -193,7 +495,10 @@ function MyHeader() {
         </ul>
       </div>
 
-      <ProductList handleAddToCart={handleAddToCart} />
+      <ProductList
+        handleAddToCart={handleAddToCart}
+        isAuthenticated={isAuthenticated}
+      />
     </>
   );
 }

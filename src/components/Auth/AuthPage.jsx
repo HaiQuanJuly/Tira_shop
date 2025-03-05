@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import * as Components from "../Auth/Component.js";
+
 function AuthPage() {
   const [signIn, setSignIn] = useState(true);
   const [formData, setFormData] = useState({
@@ -28,7 +30,7 @@ function AuthPage() {
 
     const url = signIn
       ? "http://localhost:8080/tirashop/auth/login"
-      : "http://localhost:8080/tirashop/auth/register-new-user"; // Đảm bảo URL đúng với yêu cầu API
+      : "http://localhost:8080/tirashop/auth/register-new-user";
 
     try {
       const payload = signIn
@@ -38,14 +40,14 @@ function AuthPage() {
             password: formData.password,
             confirmPassword: formData.confirmPassword,
             email: formData.email,
-            phone: formData.phoneNumber, // Đảm bảo rằng trường "phone" là chính xác
+            phone: formData.phoneNumber,
             firstName: formData.firstName,
             lastName: formData.lastName,
             gender: formData.gender,
-            dateOfBirth: formData.dateOfBirth, // Đảm bảo ngày tháng đúng định dạng
+            dateOfBirth: formData.dateOfBirth,
           };
 
-      console.log("Sending data to API:", payload); // Kiểm tra dữ liệu gửi lên server
+      console.log("Sending data to API:", payload);
 
       const response = await fetch(url, {
         method: "POST",
@@ -54,25 +56,50 @@ function AuthPage() {
       });
 
       const data = await response.json();
-      console.log("Response Status:", response.status); // Kiểm tra status code từ server
-      console.log("Response Data:", data); // Kiểm tra dữ liệu phản hồi từ server
+      console.log("Response Status:", response.status);
+      console.log("Response Data:", data);
 
       if (response.status === 200) {
         if (signIn) {
-          localStorage.setItem("token", data.data.token); // Lưu token sau khi đăng nhập thành công
-          navigate("/"); // Điều hướng về trang chính
+          if (data.data && data.data.token) {
+            localStorage.setItem("token", data.data.token);
+            console.log("Token saved to localStorage:", data.data.token);
+            toast.success("Login successful!", {
+              position: "top-right",
+              autoClose: 3000,
+            });
+            navigate("/");
+          } else {
+            setError("Login failed: No token received from server.");
+            toast.error("Login failed: No token received from server.", {
+              position: "top-right",
+              autoClose: 3000,
+            });
+          }
         } else {
-          alert(
-            `Registration Successful! Welcome, ${data.data.firstname} ${data.data.lastname}`
+          toast.success(
+            `Registration Successful! Welcome, ${data.data.firstname} ${data.data.lastname}`,
+            {
+              position: "top-right",
+              autoClose: 3000,
+            }
           );
-          setSignIn(true); // Chuyển về trang đăng nhập
+          setSignIn(true);
         }
       } else {
         setError(data.message || "Authentication failed.");
+        toast.error(data.message || "Authentication failed.", {
+          position: "top-right",
+          autoClose: 3000,
+        });
       }
     } catch (err) {
-      console.error("Error connecting to server:", err); // In lỗi kết nối server
-      setError("Error connecting to server!");
+      console.error("Error connecting to server:", err);
+      setError("Error connecting to server. Please try again.");
+      toast.error("Error connecting to server. Please try again.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
     }
   };
 
@@ -83,7 +110,7 @@ function AuthPage() {
         justifyContent: "center",
         alignItems: "center",
         height: "100vh",
-        background: "#f6f5f7",
+        background: "#000",
       }}
     >
       <Components.Container>
@@ -127,6 +154,7 @@ function AuthPage() {
               value={formData.gender}
               onChange={handleChange}
             >
+              <option value="">Select Gender</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
             </Components.Select>

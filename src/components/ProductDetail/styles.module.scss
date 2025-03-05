@@ -1,0 +1,131 @@
+.productDetailContainer {
+  max-width: 1200px;
+  margin: 60px auto;
+  padding: 30px;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #e5e5e5;
+}
+
+.productDetail {
+  display: flex;
+  gap: 40px;
+
+  .productImageWrapper {
+    flex: 1;
+    position: relative;
+
+    .productImage {
+      width: 100%;
+      height: 500px;
+      object-fit: cover;
+      border-radius: 8px;
+      transition: transform 0.5s ease;
+
+      &:hover {
+        transform: scale(1.02);
+      }
+    }
+  }
+
+  .productInfo {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #222;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+    }
+
+    .brandCategory {
+      font-size: 1rem;
+      color: #777;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .price {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #222;
+      margin-bottom: 20px;
+    }
+
+    .description {
+      font-size: 1rem;
+      color: #777;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    .sizeSelector {
+      display: flex;
+      align-items: center;
+      margin-bottom: 30px;
+
+      label {
+        font-size: 1rem;
+        color: #222;
+        margin-right: 15px;
+        text-transform: uppercase;
+      }
+
+      select {
+        padding: 10px 20px;
+        border-radius: 5px;
+        border: 1px solid #e5e5e5;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: border-color 0.3s ease;
+        background: #fff;
+        color: #222;
+
+        &:focus {
+          border-color: #000;
+        }
+      }
+    }
+
+    .addToCartBtn {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      background: #000;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-transform: uppercase;
+
+      &:hover {
+        background: #333;
+      }
+
+      &:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .productDetail {
+    flex-direction: column;
+
+    .productImageWrapper {
+      .productImage {
+        height: 400px;
+      }
+    }
+  }
+}
