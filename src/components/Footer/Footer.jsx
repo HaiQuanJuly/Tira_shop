@@ -6,69 +6,102 @@ function MyFooter() {
       <div className={styles.footerContainer}>
         {/* Cột 1 */}
         <div className={styles.footerColumn}>
-          <h2>MAY WE HELP YOU?</h2>
-          <ul>
+          <h2 className={styles.footerTitle}>May We Help You?</h2>
+          <ul className={styles.footerList}>
             <li>
-              <a href="#">Contact Us</a>
+              <a href="#" className={styles.footerLink}>
+                Contact Us
+              </a>
             </li>
             <li>
-              <a href="#">My Order</a>
+              <a href="#" className={styles.footerLink}>
+                My Order
+              </a>
             </li>
             <li>
-              <a href="#">FAQs</a>
+              <a href="#" className={styles.footerLink}>
+                FAQs
+              </a>
             </li>
             <li>
-              <a href="#">Email Unsubscribe</a>
+              <a href="#" className={styles.footerLink}>
+                Email Unsubscribe
+              </a>
             </li>
             <li>
-              <a href="#">Sitemap</a>
+              <a href="#" className={styles.footerLink}>
+                Sitemap
+              </a>
             </li>
           </ul>
         </div>
 
         {/* Cột 2 */}
         <div className={styles.footerColumn}>
-          <h2>THE COMPANY</h2>
-          <ul>
+          <h2 className={styles.footerTitle}>The Company</h2>
+          <ul className={styles.footerList}>
             <li>
-              <a href="#">About Tira</a>
-            </li>
-
-            <li>
-              <a href="#">Code of Ethics</a>
+              <a href="#" className={styles.footerLink}>
+                About Tira
+              </a>
             </li>
             <li>
-              <a href="#">Careers</a>
+              <a href="#" className={styles.footerLink}>
+                Code of Ethics
+              </a>
             </li>
             <li>
-              <a href="#">Legal</a>
+              <a href="#" className={styles.footerLink}>
+                Careers
+              </a>
             </li>
             <li>
-              <a href="#">Privacy & Cookie Policy</a>
+              <a href="#" className={styles.footerLink}>
+                Legal
+              </a>
             </li>
             <li>
-              <a href="#">Cookie Settings</a>
+              <a href="#" className={styles.footerLink}>
+                Privacy & Cookie Policy
+              </a>
             </li>
             <li>
-              <a href="#">Corporate Information</a>
+              <a href="#" className={styles.footerLink}>
+                Cookie Settings
+              </a>
+            </li>
+            <li>
+              <a href="#" className={styles.footerLink}>
+                Corporate Information
+              </a>
             </li>
           </ul>
         </div>
 
         {/* Cột 3 */}
         <div className={styles.footerColumn}>
-          <h2>STORE LOCATOR</h2>
-          <p>Country/Region, City</p>
-          <h2>SIGN UP FOR GUCCI UPDATES</h2>
-          <p>
+          <h2 className={styles.footerTitle}>Store Locator</h2>
+          <p className={styles.footerText}>Country/Region, City</p>
+          <h2 className={styles.footerTitle}>Sign Up for Gucci Updates</h2>
+          <p className={styles.footerText}>
             By entering your email address below, you consent to receiving our
             newsletter with access to our latest collections, events and
             initiatives. More details on this are provided in our{" "}
-            <a href="#">Privacy Policy</a>.
+            <a href="#" className={styles.footerLink}>
+              Privacy Policy
+            </a>
+            .
           </p>
-          <input type="email" placeholder="Email" />
-          <h2>COUNTRY/REGION</h2>
-          <p className={styles.boldText}>UNITED STATES</p>
+          <div className={styles.emailInputContainer}>
+            <input
+              type="email"
+              placeholder="Email"
+              className={styles.emailInput}
+            />
+            <button className={styles.submitButton}>Submit</button>
+          </div>
+          <h2 className={styles.footerTitle}>Country/Region</h2>
+          <p className={styles.footerTextBold}>United States</p>
         </div>
       </div>
     </footer>

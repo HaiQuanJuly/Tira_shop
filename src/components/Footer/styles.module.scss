@@ -1,14 +1,16 @@
 .footer {
-  background-color: black;
-  color: white;
-  padding: 40px 80px;
+  background: #f5f5f5; // Nền nhạt tương tự các trang khác
+  padding: 40px 20px;
+  border-top: 1px solid #e5e5e5;
 }
 
 .footerContainer {
-  margin: 0px 120px;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   flex-wrap: wrap;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .footerColumn {
@@ -17,47 +19,85 @@
   margin-bottom: 20px;
 }
 
-h2 {
-  font-size: 14px;
-  font-weight: bold;
+.footerTitle {
+  margin: 0 0 20px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #222;
   text-transform: uppercase;
-  color: gray;
-  margin-bottom: 15px;
+  letter-spacing: 1px;
 }
 
-ul {
+.footerList {
   list-style: none;
   padding: 0;
   margin: 0;
+
+  li {
+    margin-bottom: 10px;
+  }
 }
 
-li {
-  margin-bottom: 10px;
+.footerLink {
+  color: #777;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #222;
+  }
 }
 
-a {
-  color: white;
-  text-decoration: underline;
-  font-size: 14px;
+.footerText {
+  color: #777;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 10px 0;
 }
 
-p {
-  font-size: 14px;
-  color: white;
-}
-
-input {
-  width: 100%;
-  padding: 8px;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid white;
-  color: white;
-  margin-top: 10px;
-  outline: none;
-}
-
-.boldText {
-  font-weight: bold;
+.footerTextBold {
+  color: #222;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 10px 0;
   text-transform: uppercase;
+}
+
+.emailInputContainer {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.emailInput {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #e5e5e5;
+  border-radius: 5px;
+  font-size: 1rem;
+  color: #222;
+  background: #fff;
+  outline: none;
+
+  &:focus {
+    border-color: #ccc;
+  }
+}
+
+.submitButton {
+  background: #222;
+  border: none;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background: #555;
+  }
 }

@@ -1,13 +1,14 @@
 import styles from "./styles.module.scss";
+
 export default function BannerGucciMen() {
   return (
-    <div className={styles.container}>
+    <div className={styles.bannerContainer}>
       <div className={styles.imgBanner}>
         <div className={styles.title}>
-          <button>Men</button>
-          <div>Introducing An Ultra-Contemporasy Style</div>
-          <div>Gucci</div>
-          <button>Discover More</button>
+          <button className={styles.categoryButton}>Men</button>
+          <h1>Introducing An Ultra-Contemporary Style</h1>
+          <h2>Gucci</h2>
+          <button className={styles.discoverButton}>Discover More</button>
         </div>
       </div>
     </div>

@@ -6,24 +6,24 @@ import handleBag from "../../assets/icons/images/HandleBag.webp";
 
 export default function Brand() {
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>Curated by the House</h1>
-      <div className={styles.brand}>
-        <div>
-          <img src={bag} className={styles.imgBrand}></img>
-          <p className={styles.name_brand}>Versace</p>
+    <div className={styles.brandContainer}>
+      <h1 className={styles.brandTitle}>Curated by the House</h1>
+      <div className={styles.brandList}>
+        <div className={styles.brandItem}>
+          <img src={bag} alt="Versace" className={styles.brandImage} />
+          <p className={styles.brandName}>Versace</p>
         </div>
-        <div>
-          <img src={shose} className={styles.imgBrand}></img>
-          <p className={styles.name_brand}>Zara</p>
+        <div className={styles.brandItem}>
+          <img src={shose} alt="Zara" className={styles.brandImage} />
+          <p className={styles.brandName}>Zara</p>
         </div>
-        <div>
-          <img src={sneaker} className={styles.imgBrand}></img>
-          <p className={styles.name_brand}>Calvin</p>
+        <div className={styles.brandItem}>
+          <img src={sneaker} alt="Calvin" className={styles.brandImage} />
+          <p className={styles.brandName}>Calvin</p>
         </div>
-        <div>
-          <img src={handleBag} className={styles.imgBrand}></img>
-          <p className={styles.name_brand}>Gucci</p>
+        <div className={styles.brandItem}>
+          <img src={handleBag} alt="Gucci" className={styles.brandImage} />
+          <p className={styles.brandName}>Gucci</p>
         </div>
       </div>
     </div>
