@@ -15,6 +15,7 @@ function HomePage() {
       <Sneaker></Sneaker>
       <Women></Women>
       <PostList></PostList>
+
       <Footer></Footer>
     </>
   );

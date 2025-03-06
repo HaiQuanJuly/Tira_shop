@@ -19,6 +19,9 @@ function MyHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
+  const [showBrandDropdown, setShowBrandDropdown] = useState(false);
+  const [showSidebarBrandDropdown, setShowSidebarBrandDropdown] =
+    useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -66,7 +69,7 @@ function MyHeader() {
           productId: parseInt(item.productId),
           size: validSizes.includes(item.size) ? item.size : "M",
           productImage: item.productImage
-            ? `http://localhost:8080${item.productImage}` // Chuẩn hóa đường dẫn hình ảnh
+            ? `http://localhost:8080${item.productImage}`
             : null,
         }));
         setCart(parsedCart);
@@ -400,6 +403,25 @@ function MyHeader() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const navigateToBestProducts = () => {
+    // Navigate to best products page or scroll to best products section
+    const bestProductsSection = document.querySelector(
+      `.${styles.productListContainer}`
+    );
+    if (bestProductsSection) {
+      bestProductsSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  // Added brand navigation function
+  const navigateToBrand = (brand) => {
+    console.log(`Navigating to ${brand} products`);
+    // Implement brand navigation logic here
+    setShowBrandDropdown(false);
+    setShowSidebarBrandDropdown(false);
+    setIsMenuOpen(false);
+  };
+
   return (
     <>
       <header
@@ -409,9 +431,57 @@ function MyHeader() {
           className={`${styles.headerTitle} ${
             isScrolled ? styles.showHeaderTitle : ""
           }`}
+          onClick={() => navigate("/")}
         >
           TIRA
         </h1>
+
+        {/* Navigation Menu */}
+        <div
+          className={`${styles.navMenu} ${isScrolled ? styles.showNav : ""}`}
+        >
+          <div className={styles.navItem} onClick={navigateToBestProducts}>
+            Best Product
+          </div>
+          <div
+            className={styles.navItem}
+            onMouseEnter={() => setShowBrandDropdown(true)}
+            onMouseLeave={() => setShowBrandDropdown(false)}
+          >
+            Brand
+            {showBrandDropdown && (
+              <div className={styles.brandDropdown}>
+                <div
+                  className={styles.brandItem}
+                  onClick={() => navigateToBrand("Gucci")}
+                >
+                  Gucci
+                </div>
+                <div
+                  className={styles.brandItem}
+                  onClick={() => navigateToBrand("Calvin")}
+                >
+                  Calvin
+                </div>
+                <div
+                  className={styles.brandItem}
+                  onClick={() => navigateToBrand("Versace")}
+                >
+                  Versace
+                </div>
+                <div
+                  className={styles.brandItem}
+                  onClick={() => navigateToBrand("Zara")}
+                >
+                  Zara
+                </div>
+              </div>
+            )}
+          </div>
+          <div className={styles.navItem}>Store System</div>
+          <div className={styles.navItem}>Voucher</div>
+        </div>
+
         <div className={`${styles.iconBox} ${isScrolled ? styles.flyUp : ""}`}>
           {!isAuthenticated && (
             <img
@@ -480,10 +550,25 @@ function MyHeader() {
           <img src={closeIcon} alt="Close" />
         </button>
         <ul className={styles.menuList}>
-          <li>Gucci</li>
-          <li>Calvin</li>
-          <li>Versace</li>
-          <li>Zara</li>
+          <li onClick={navigateToBestProducts}>Best Product</li>
+          <li
+            className={styles.menuItemWithSubmenu}
+            onClick={() =>
+              setShowSidebarBrandDropdown(!showSidebarBrandDropdown)
+            }
+          >
+            Brand {showSidebarBrandDropdown ? "▲" : "▼"}
+            {showSidebarBrandDropdown && (
+              <ul className={styles.submenu}>
+                <li onClick={() => navigateToBrand("Gucci")}>Gucci</li>
+                <li onClick={() => navigateToBrand("Calvin")}>Calvin</li>
+                <li onClick={() => navigateToBrand("Versace")}>Versace</li>
+                <li onClick={() => navigateToBrand("Zara")}>Zara</li>
+              </ul>
+            )}
+          </li>
+          <li>Store System</li>
+          <li>Voucher</li>
           {!isAuthenticated ? (
             <li onClick={() => navigate("/auth")}>Sign In</li>
           ) : (
