@@ -129,3 +129,14 @@
     }
   }
 }
+
+.productDetailPage {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Update existing styles to work with the new structure */
+.productDetailContainer {
+  margin-bottom: 2rem;
+}

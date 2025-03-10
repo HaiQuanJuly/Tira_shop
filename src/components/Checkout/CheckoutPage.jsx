@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import styles from "./styles.module.scss";
@@ -113,68 +113,70 @@ function CheckoutPage() {
   };
 
   return (
-    <div className={styles.checkoutContainer}>
-      <h2>Checkout</h2>
-      {cart.length === 0 ? (
-        <p className={styles.emptyCartMessage}>
-          Your cart is empty. Please add items to proceed.
-        </p>
-      ) : (
-        <div className={styles.checkoutContent}>
-          <div className={styles.cartSummary}>
-            <h3>Order Summary</h3>
-            {cart.map((item) => (
-              <div key={item.cartId} className={styles.cartItem}>
-                <img
-                  src={item.productImage || "https://via.placeholder.com/50"}
-                  alt={item.productName}
-                  className={styles.cartItemImage}
-                />
-                <div className={styles.cartItemDetails}>
-                  <h4>{item.productName}</h4>
-                  <p>Price: ${item.productPrice.toFixed(2)}</p>
-                  <p>Quantity: {item.quantity}</p>
-                  <p>Size: {item.size || "N/A"}</p>
+    <>
+      <div className={styles.checkoutContainer}>
+        <h2>Checkout</h2>
+        {cart.length === 0 ? (
+          <p className={styles.emptyCartMessage}>
+            Your cart is empty. Please add items to proceed.
+          </p>
+        ) : (
+          <div className={styles.checkoutContent}>
+            <div className={styles.cartSummary}>
+              <h3>Order Summary</h3>
+              {cart.map((item) => (
+                <div key={item.cartId} className={styles.cartItem}>
+                  <img
+                    src={item.productImage || "https://via.placeholder.com/50"}
+                    alt={item.productName}
+                    className={styles.cartItemImage}
+                  />
+                  <div className={styles.cartItemDetails}>
+                    <h4>{item.productName}</h4>
+                    <p>Price: ${item.productPrice.toFixed(2)}</p>
+                    <p>Quantity: {item.quantity}</p>
+                    <p>Size: {item.size || "N/A"}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
-            <h3 className={styles.total}>Total: ${total.toFixed(2)}</h3>
-          </div>
+              ))}
+              <h3 className={styles.total}>Total: ${total.toFixed(2)}</h3>
+            </div>
 
-          <form onSubmit={handleCheckout} className={styles.checkoutForm}>
-            <h3>Shipping Information</h3>
-            <div className={styles.formGroup}>
-              <label htmlFor="shippingAddress">Shipping Address</label>
-              <textarea
-                id="shippingAddress"
-                value={shippingAddress}
-                onChange={(e) => setShippingAddress(e.target.value)}
-                required
-                placeholder="Enter your shipping address"
-              />
-            </div>
-            <div className={styles.formGroup}>
-              <label htmlFor="voucherId">Voucher Code (Optional)</label>
-              <input
-                id="voucherId"
-                type="text"
-                value={voucherId}
-                onChange={(e) => setVoucherId(e.target.value)}
-                placeholder="Enter voucher code"
-              />
-            </div>
-            {error && <p className={styles.error}>{error}</p>}
-            <button
-              type="submit"
-              disabled={loading}
-              className={styles.submitBtn}
-            >
-              {loading ? "Processing..." : "Place Order"}
-            </button>
-          </form>
-        </div>
-      )}
-    </div>
+            <form onSubmit={handleCheckout} className={styles.checkoutForm}>
+              <h3>Shipping Information</h3>
+              <div className={styles.formGroup}>
+                <label htmlFor="shippingAddress">Shipping Address</label>
+                <textarea
+                  id="shippingAddress"
+                  value={shippingAddress}
+                  onChange={(e) => setShippingAddress(e.target.value)}
+                  required
+                  placeholder="Enter your shipping address"
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label htmlFor="voucherId">Voucher Code (Optional)</label>
+                <input
+                  id="voucherId"
+                  type="text"
+                  value={voucherId}
+                  onChange={(e) => setVoucherId(e.target.value)}
+                  placeholder="Enter voucher code"
+                />
+              </div>
+              {error && <p className={styles.error}>{error}</p>}
+              <button
+                type="submit"
+                disabled={loading}
+                className={styles.submitBtn}
+              >
+                {loading ? "Processing..." : "Place Order"}
+              </button>
+            </form>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 

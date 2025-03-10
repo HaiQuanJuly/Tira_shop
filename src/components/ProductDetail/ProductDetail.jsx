@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import styles from "./styles.module.scss";
+import ProductReview from "../ProductReview/ProductReview"; // Import the ProductReview component
 
 function ProductDetail() {
   const { id } = useParams();
@@ -164,57 +165,62 @@ function ProductDetail() {
   if (!product) return <p>Product not found</p>;
 
   return (
-    <div className={styles.productDetailContainer}>
-      <div className={styles.productDetail}>
-        <div className={styles.productImageWrapper}>
-          <img
-            src={
-              product.imageUrls && product.imageUrls.length > 0
-                ? `http://localhost:8080${product.imageUrls[0]}`
-                : "https://via.placeholder.com/300"
-            }
-            alt={product.name}
-            className={styles.productImage}
-          />
-        </div>
-        <div className={styles.productInfo}>
-          <h2>{product.name}</h2>
-          <p className={styles.brandCategory}>
-            {product.brandName} | {product.categoryName}
-          </p>
-          <p className={styles.price}>${product.price.toFixed(2)}</p>
-          <p className={styles.description}>
-            {product.description || "No description available"}
-          </p>
-          <div className={styles.sizeSelector}>
-            <label>Select Size:</label>
-            <select
-              value={selectedSize}
-              onChange={(e) => setSelectedSize(e.target.value)}
-            >
-              <option value="S">S</option>
-              <option value="M">M</option>
-              <option value="L">L</option>
-            </select>
+    <div className={styles.productDetailPage}>
+      <div className={styles.productDetailContainer}>
+        <div className={styles.productDetail}>
+          <div className={styles.productImageWrapper}>
+            <img
+              src={
+                product.imageUrls && product.imageUrls.length > 0
+                  ? `http://localhost:8080${product.imageUrls[0]}`
+                  : "https://via.placeholder.com/300"
+              }
+              alt={product.name}
+              className={styles.productImage}
+            />
           </div>
-          {isAuthenticated ? (
-            <button
-              onClick={handleAddToCart}
-              className={styles.addToCartBtn}
-              disabled={isAdding}
-            >
-              {isAdding ? "Adding..." : "Add to Cart"}
-            </button>
-          ) : (
-            <button
-              onClick={() => navigate("/auth")}
-              className={styles.addToCartBtn}
-            >
-              Sign In to Add
-            </button>
-          )}
+          <div className={styles.productInfo}>
+            <h2>{product.name}</h2>
+            <p className={styles.brandCategory}>
+              {product.brandName} | {product.categoryName}
+            </p>
+            <p className={styles.price}>${product.price.toFixed(2)}</p>
+            <p className={styles.description}>
+              {product.description || "No description available"}
+            </p>
+            <div className={styles.sizeSelector}>
+              <label>Select Size:</label>
+              <select
+                value={selectedSize}
+                onChange={(e) => setSelectedSize(e.target.value)}
+              >
+                <option value="S">S</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+              </select>
+            </div>
+            {isAuthenticated ? (
+              <button
+                onClick={handleAddToCart}
+                className={styles.addToCartBtn}
+                disabled={isAdding}
+              >
+                {isAdding ? "Adding..." : "Add to Cart"}
+              </button>
+            ) : (
+              <button
+                onClick={() => navigate("/auth")}
+                className={styles.addToCartBtn}
+              >
+                Sign In to Add
+              </button>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Add the ProductReview component */}
+      <ProductReview />
     </div>
   );
 }
