@@ -68,6 +68,7 @@
   transition: transform 300ms, opacity 500ms;
 }
 
+
 .menu:hover::after {
   opacity: 1;
   transform: scale(1);

@@ -10,6 +10,8 @@ import closeIcon from "../../assets/icons/svgs/close.svg";
 import bannerGucci from "../../assets/icons/images/bannerGucci.png";
 import ProductList from "../ProductItem/ProductList";
 import Cart from "../Cart/Cart";
+import Search from "../Search/Search"; // Import Search component
+
 
 function MyHeader() {
   const navigate = useNavigate();
@@ -20,8 +22,9 @@ function MyHeader() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [showBrandDropdown, setShowBrandDropdown] = useState(false);
-  const [showSidebarBrandDropdown, setShowSidebarBrandDropdown] =
-    useState(false);
+  const [showSidebarBrandDropdown, setShowSidebarBrandDropdown] =useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -501,7 +504,10 @@ function MyHeader() {
             src={searchIcon}
             alt="Search Icon"
             className={styles.headerIcon}
+            onClick={() => setIsSearchOpen(!isSearchOpen)}
           />
+          {/* Gọi Search component */}
+      <Search isSearchOpen={isSearchOpen} setIsSearchOpen={setIsSearchOpen} />
           <img
             src={barIcon}
             alt="Menu Icon"
@@ -510,6 +516,7 @@ function MyHeader() {
           />
         </div>
       </header>
+  
 
       <div className={styles.banner}>
         <img src={bannerGucci} className={styles.bannerImage} alt="Banner" />

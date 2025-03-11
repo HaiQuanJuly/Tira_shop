@@ -219,7 +219,7 @@ function AuthPage() {
             {error && (
               <Components.ErrorMessage>{error}</Components.ErrorMessage>
             )}
-            <Components.Anchor href="#">
+            <Components.Anchor href="#" onClick={() => navigate("/forgot-password")}>
               Forgot your password?
             </Components.Anchor>
             <Components.Button type="submit">Sign In</Components.Button>
