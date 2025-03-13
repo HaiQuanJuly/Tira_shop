@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { FaTimes, FaPaperPlane, FaRegCommentDots } from "react-icons/fa";
 
 function ChatBox() {
@@ -6,7 +6,9 @@ function ChatBox() {
   const [message, setMessage] = useState("");
 
   return (
-    <div style={{ position: "fixed", bottom: "20px", right: "20px", zIndex: 1000 }}>
+    <div
+      style={{ position: "fixed", bottom: "20px", right: "20px", zIndex: 1000 }}
+    >
       {/* Hộp thoại chat */}
       <div
         style={{
@@ -34,7 +36,16 @@ function ChatBox() {
             paddingBottom: "8px",
           }}
         >
-          <h3 style={{ margin: 0, color: "#fff", fontSize: "18px", fontWeight: "bold" }}>Chatbox</h3>
+          <h3
+            style={{
+              margin: 0,
+              color: "#fff",
+              fontSize: "18px",
+              fontWeight: "bold",
+            }}
+          >
+            Chatbox
+          </h3>
           <button
             onClick={() => setIsOpen(false)}
             style={{
@@ -51,11 +62,15 @@ function ChatBox() {
 
         {/* Nội dung tin nhắn */}
         <div style={{ flex: 1, overflowY: "auto", padding: "10px" }}>
-          <p style={{ fontSize: "14px", color: "#fff", fontStyle: "italic" }}>Hello! Type your message...</p>
+          <p style={{ fontSize: "14px", color: "#fff", fontStyle: "italic" }}>
+            Hello! Type your message...
+          </p>
         </div>
 
         {/* Ô nhập tin nhắn */}
-        <div style={{ display: "flex", alignItems: "center", marginTop: "5px" }}>
+        <div
+          style={{ display: "flex", alignItems: "center", marginTop: "5px" }}
+        >
           <input
             type="text"
             placeholder="Type a message..."

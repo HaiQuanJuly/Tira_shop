@@ -1,9 +1,9 @@
 import styled from "styled-components";
 
 export const Container = styled.div`
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.8); // Trắng trong suốt nhẹ
   border-radius: 10px;
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); // Bóng đổ trầm
   position: relative;
   overflow: hidden;
   width: 1000px;
@@ -12,7 +12,7 @@ export const Container = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid #d4af37;
+  border: 2px solid #b0bec5; // Bạc trầm
 `;
 
 export const SignUpContainer = styled.div`
@@ -40,7 +40,8 @@ export const SignInContainer = styled.div`
   transition: all 0.6s ease-in-out;
   left: 0;
   width: 50%;
-  z-index: 2;
+  z-index: ${({ signinIn }) => (signinIn ? 5 : 2)};
+  opacity: ${({ signinIn }) => (signinIn ? 1 : 0)};
   ${({ signinIn }) =>
     !signinIn &&
     `
@@ -49,7 +50,7 @@ export const SignInContainer = styled.div`
 `;
 
 export const Form = styled.form`
-  background-color: #ffffff;
+  background-color: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -60,73 +61,83 @@ export const Form = styled.form`
 `;
 
 export const Title = styled.h1`
-  font-weight: bold;
+  font-weight: 700;
   margin: 0;
-  font-size: 24px;
-  color: #000;
   padding: 30px;
+  font-size: 32px;
+  color: #000; // Bạc trầm
+  font-family: "Poppins", sans-serif;
 `;
 
 export const Input = styled.input`
-  background-color: #eee;
-  border: 1px solid #d4af37;
-  padding: 12px 15px;
-  margin: 8px 0;
+  background-color: rgba(255, 255, 255, 0.9); // Trắng trong suốt
+  border: 2px solid #b0bec5; // Bạc trầm
+  padding: 14px 20px;
+  margin: 10px 0;
   width: 100%;
   border-radius: 5px;
   font-size: 16px;
-  color: #000;
+  color: #212121; // Đen trầm
+  transition: all 0.3s ease;
   &:focus {
     outline: none;
-    border: 2px solid #c8102e;
-    background-color: #fff;
+    border-color: #78909c; // Xám đậm hơn khi focus
+  }
+  &::placeholder {
+    color: #78909c; // Xám nhạt
   }
 `;
 
 export const Select = styled.select`
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 2px solid #b0bec5;
+  padding: 14px 20px;
+  margin: 10px 0;
   width: 100%;
-  padding: 12px 15px;
-  margin: 8px 0;
   border-radius: 5px;
-  border: 1px solid #d4af37;
-  background-color: #eee;
   font-size: 16px;
+  color: #212121;
+  transition: all 0.3s ease;
   &:focus {
     outline: none;
-    border: 2px solid #c8102e;
-    background-color: #fff;
+    border-color: #78909c;
+  }
+  &::placeholder {
+    color: #78909c;
   }
 `;
 
 export const Button = styled.button`
   border-radius: 20px;
-  border: 1px solid #d4af37;
-  background-color: #d4af37;
-  color: #000;
-  font-size: 14px;
-  font-weight: bold;
+  border: 2px solid #b0bec5;
+  background-color: #424242; // Xám đậm
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
   padding: 12px 45px;
   letter-spacing: 1px;
   text-transform: uppercase;
-  transition: transform 80ms ease-in;
+  transition: all 0.3s ease;
   cursor: pointer;
   margin: 30px;
+  &:hover {
+    background-color: #616161; // Xám trầm hơn khi hover
+  }
   &:active {
     transform: scale(0.95);
   }
   &:focus {
     outline: none;
   }
-  &:hover {
-    background-color: #b8972d;
-  }
 `;
 
 export const GhostButton = styled(Button)`
   background-color: transparent;
-  border-color: #d4af37;
-  color: #d4af37;
-  padding: 20px;
+  color: #b0bec5;
+  &:hover {
+    background-color: #b0bec5;
+    color: #212121;
+  }
 `;
 
 export const Anchor = styled.a`
@@ -134,6 +145,10 @@ export const Anchor = styled.a`
   font-size: 14px;
   text-decoration: none;
   margin: 15px 0;
+  transition: color 0.3s ease;
+  &:hover {
+    color: #b0bec5;
+  }
 `;
 
 export const OverlayContainer = styled.div`
@@ -153,8 +168,12 @@ export const OverlayContainer = styled.div`
 `;
 
 export const Overlay = styled.div`
-  background: linear-gradient(to right, #d4af37, #c8102e);
-  color: #000;
+  background: linear-gradient(
+    to right,
+    rgba(64, 64, 64, 0.8),
+    rgba(0, 0, 0, 0.7)
+  ); // Gradient xám-đen
+  color: #ffffff;
   position: relative;
   left: -100%;
   height: 100%;
@@ -202,16 +221,69 @@ export const RightOverlayPanel = styled(OverlayPanel)`
 `;
 
 export const Paragraph = styled.p`
-  font-size: 14px;
-  font-weight: 100;
-  line-height: 20px;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 24px;
   letter-spacing: 0.5px;
   margin: 20px 0 30px;
-  color: #000;
+  color: #ffffff;
+  font-family: "Poppins", sans-serif;
 `;
 
 export const ErrorMessage = styled.p`
-  color: #c8102e;
+  color: #ef5350; // Đỏ nhạt
   font-size: 14px;
   margin: 10px 0;
+`;
+
+export const SocialDivider = styled.div`
+  font-size: 14px;
+  color: #78909c;
+  margin: 20px 0;
+  position: relative;
+  width: 100%;
+  text-align: center;
+  &:before,
+  &:after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: #78909c;
+  }
+  &:before {
+    left: 0;
+  }
+  &:after {
+    right: 0;
+  }
+`;
+
+export const SocialButton = styled.button`
+  border-radius: 20px;
+  border: 2px solid #b0bec5;
+  background-color: #212121; // Đen trầm
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 45px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  margin: 10px 0;
+  width: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  &:hover {
+    background-color: #424242; // Xám đậm hơn khi hover
+  }
+  &:active {
+    transform: scale(0.95);
+  }
+  &:focus {
+    outline: none;
+  }
 `;

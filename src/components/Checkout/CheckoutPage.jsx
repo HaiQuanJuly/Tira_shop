@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import styles from "./styles.module.scss";
+import Footer from "../Footer/Footer";
 
 function CheckoutPage() {
   const navigate = useNavigate();
@@ -176,6 +177,7 @@ function CheckoutPage() {
           </div>
         )}
       </div>
+      <Footer></Footer>
     </>
   );
 }

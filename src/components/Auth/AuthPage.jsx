@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as Components from "../Auth/Component.js";
+import { FaGoogle, FaFacebookF } from "react-icons/fa";
+import { useAppContext } from "../../context/AppContext";
 
 function AuthPage() {
+  const { setIsAuthenticated } = useAppContext(); // Lấy setIsAuthenticated từ context
   const [signIn, setSignIn] = useState(true);
   const [formData, setFormData] = useState({
     username: "",
@@ -16,17 +19,94 @@ function AuthPage() {
     gender: "",
     dateOfBirth: "",
   });
-
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Kiểm tra token khi component được mount
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+    if (token && userId) {
+      validateToken(token).then((isValid) => {
+        if (isValid) {
+          setIsAuthenticated(true); // Cập nhật trạng thái xác thực
+          toast.info("You are already logged in", {
+            position: "top-right",
+            autoClose: 3000,
+          });
+          navigate("/");
+        } else {
+          localStorage.removeItem("token");
+          localStorage.removeItem("userId");
+          localStorage.removeItem("username");
+          setIsAuthenticated(false);
+        }
+      });
+    }
+  }, [navigate, setIsAuthenticated]);
+
+  // Hàm xác thực token bằng cách gọi API
+  const validateToken = async (token) => {
+    try {
+      const response = await fetch(
+        "http://localhost:8080/tirashop/auth/validate-token",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+      return response.status === 200 && data.status === "success";
+    } catch (err) {
+      console.error("Token validation error:", err);
+      return false;
+    }
+  };
+
+  // Xử lý thay đổi input
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Xử lý đăng nhập/đăng ký
   const handleAuth = async (e) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true);
+
+    // Kiểm tra form trước khi gửi
+    if (signIn) {
+      if (!formData.username || !formData.password) {
+        setError("Please fill in all required fields.");
+        setIsLoading(false);
+        return;
+      }
+    } else {
+      if (
+        !formData.username ||
+        !formData.password ||
+        !formData.confirmPassword ||
+        !formData.email ||
+        !formData.phoneNumber ||
+        !formData.firstName ||
+        !formData.lastName ||
+        !formData.gender ||
+        !formData.dateOfBirth
+      ) {
+        setError("Please fill in all required fields.");
+        setIsLoading(false);
+        return;
+      }
+      if (formData.password !== formData.confirmPassword) {
+        setError("Passwords do not match.");
+        setIsLoading(false);
+        return;
+      }
+    }
 
     const url = signIn
       ? "http://localhost:8080/tirashop/auth/login"
@@ -59,47 +139,64 @@ function AuthPage() {
       console.log("Response Status:", response.status);
       console.log("Response Data:", data);
 
-      if (response.status === 200) {
+      if (response.status === 200 && data.status === "success") {
         if (signIn) {
           if (data.data && data.data.token) {
             localStorage.setItem("token", data.data.token);
-            console.log("Token saved to localStorage:", data.data.token);
+            localStorage.setItem("userId", data.data.userId || "unknown");
+            localStorage.setItem("username", formData.username);
+            setIsAuthenticated(true); // Cập nhật trạng thái xác thực
             toast.success("Login successful!", {
               position: "top-right",
               autoClose: 3000,
             });
             navigate("/");
           } else {
-            setError("Login failed: No token received from server.");
-            toast.error("Login failed: No token received from server.", {
+            setError(
+              "Login successful but no token received. Please try again."
+            );
+            toast.error("No token received. Please try again.", {
               position: "top-right",
               autoClose: 3000,
             });
           }
         } else {
           toast.success(
-            `Registration Successful! Welcome, ${data.data.firstname} ${data.data.lastname}`,
+            "Registration successful! Please log in with your new account.",
             {
               position: "top-right",
               autoClose: 3000,
             }
           );
-          setSignIn(true);
+          setSignIn(true); // Chuyển sang form đăng nhập
+          setFormData({
+            username: "",
+            password: "",
+            confirmPassword: "",
+            email: "",
+            phoneNumber: "",
+            firstName: "",
+            lastName: "",
+            gender: "",
+            dateOfBirth: "",
+          });
         }
       } else {
-        setError(data.message || "Authentication failed.");
-        toast.error(data.message || "Authentication failed.", {
+        setError(data.message || "Authentication failed. Please try again.");
+        toast.error(data.message || "Authentication failed", {
           position: "top-right",
           autoClose: 3000,
         });
       }
     } catch (err) {
-      console.error("Error connecting to server:", err);
-      setError("Error connecting to server. Please try again.");
-      toast.error("Error connecting to server. Please try again.", {
+      console.error("Error connecting to server:", err.message, err.stack);
+      setError("Unable to connect to server. Please try again later.");
+      toast.error("Server connection error: " + err.message, {
         position: "top-right",
         autoClose: 3000,
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -110,7 +207,11 @@ function AuthPage() {
         justifyContent: "center",
         alignItems: "center",
         height: "100vh",
-        background: "#000",
+        backgroundImage:
+          "url(https://americanaatbrand.com/wp-content/uploads/2023/08/AAB_Gucci-Blog_1920x1080_1_Header.jpg)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
     >
       <Components.Container>
@@ -161,7 +262,7 @@ function AuthPage() {
             <Components.Input
               type="date"
               name="dateOfBirth"
-              placeholder="Date of Birth"
+              placeholder="mm/dd/yyyy"
               value={formData.dateOfBirth}
               onChange={handleChange}
               required
@@ -193,13 +294,15 @@ function AuthPage() {
             {error && (
               <Components.ErrorMessage>{error}</Components.ErrorMessage>
             )}
-            <Components.Button type="submit">Sign Up</Components.Button>
+            <Components.Button type="submit" disabled={isLoading}>
+              {isLoading ? "Processing..." : "Sign Up"}
+            </Components.Button>
           </Components.Form>
         </Components.SignUpContainer>
 
         <Components.SignInContainer signinIn={signIn}>
           <Components.Form onSubmit={handleAuth}>
-            <Components.Title>Sign in</Components.Title>
+            <Components.Title>Sign In</Components.Title>
             <Components.Input
               type="text"
               name="username"
@@ -219,10 +322,25 @@ function AuthPage() {
             {error && (
               <Components.ErrorMessage>{error}</Components.ErrorMessage>
             )}
-            <Components.Anchor href="#" onClick={() => navigate("/forgot-password")}>
+            <Components.Anchor
+              href="#"
+              onClick={() => navigate("/forgot-password")}
+            >
               Forgot your password?
             </Components.Anchor>
-            <Components.Button type="submit">Sign In</Components.Button>
+            <Components.Button type="submit" disabled={isLoading}>
+              {isLoading ? "Processing..." : "Sign In"}
+            </Components.Button>
+
+            <Components.SocialDivider>Or sign in with</Components.SocialDivider>
+            <Components.SocialButton>
+              <FaGoogle style={{ marginRight: "10px" }} />
+              Sign in with Google
+            </Components.SocialButton>
+            <Components.SocialButton>
+              <FaFacebookF style={{ marginRight: "10px" }} />
+              Sign in with Facebook
+            </Components.SocialButton>
           </Components.Form>
         </Components.SignInContainer>
 

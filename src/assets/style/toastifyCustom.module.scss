@@ -2,9 +2,9 @@
 
 :global {
   .Toastify__toast {
-    background: #000 !important; // Nền đen
-    color: #fff !important; // Chữ trắng
-    border: 1px solid #d4af37 !important; // Viền vàng
+    background: #fff !important; // Nền đen
+    color: #000 !important; // Chữ trắng
+    border: 1px solid #c8102e !important; // Viền vàng
     border-radius: 8px !important;
     padding: 15px !important;
     font-size: 1rem !important;
@@ -12,12 +12,12 @@
   }
 
   .Toastify__toast--success {
-    background: #000 !important;
-    border-left: 5px solid #d4af37 !important; // Viền trái vàng cho thông báo thành công
+    background: #ffffff !important;
+    border-left: 5px solid #c8102e !important; // Viền trái vàng cho thông báo thành công
   }
 
   .Toastify__toast--error {
-    background: #000 !important;
+    background: #ffff !important;
     border-left: 5px solid #c8102e !important; // Viền trái đỏ cho thông báo lỗi
   }
 
@@ -27,7 +27,7 @@
   }
 
   .Toastify__progress-bar {
-    background: #d4af37 !important; // Thanh tiến trình vàng
+    background: #c8102e !important; // Thanh tiến trình vàng
   }
 
   .Toastify__close-button {

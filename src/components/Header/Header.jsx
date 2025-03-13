@@ -1,5 +1,5 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import styles from "./styles.module.scss";
 import userIcon from "../../assets/icons/svgs/userIcon.svg";
@@ -11,20 +11,18 @@ import bannerGucci from "../../assets/icons/images/bannerGucci.png";
 import ProductList from "../ProductItem/ProductList";
 import Cart from "../Cart/Cart";
 import Search from "../Search/Search"; // Import Search component
-
+import FixedHeader from "./FixedHeader"; // Import FixedHeader component
 
 function MyHeader() {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [cart, setCart] = useState([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
-  const [showBrandDropdown, setShowBrandDropdown] = useState(false);
-  const [showSidebarBrandDropdown, setShowSidebarBrandDropdown] =useState(false);
+  const [showSidebarBrandDropdown, setShowSidebarBrandDropdown] =
+    useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -185,18 +183,6 @@ function MyHeader() {
     }
   };
 
-  const handleCartClick = () => {
-    if (!isAuthenticated) {
-      toast.error("Please log in to view your cart", {
-        position: "top-right",
-        autoClose: 3000,
-      });
-      navigate("/auth");
-      return;
-    }
-    setIsSidebarOpen(true);
-  };
-
   const closeSidebar = () => {
     setIsSidebarOpen(false);
   };
@@ -336,9 +322,6 @@ function MyHeader() {
         return;
       }
 
-      console.log("Removing item with cartId:", parsedCartId);
-      console.log("Token being sent:", token);
-
       const response = await fetch(
         `http://localhost:8080/tirashop/cart/remove/${parsedCartId}`,
         {
@@ -350,30 +333,23 @@ function MyHeader() {
         }
       );
 
-      if (response.status === 401 || response.status === 400) {
-        const data = await response.json();
-        console.log("Error response:", data);
-        if (
-          data.message.includes("User must be logged in") ||
-          response.status === 401
-        ) {
-          localStorage.removeItem("token");
-          setIsAuthenticated(false);
-          toast.error("Your session has expired. Please log in again.", {
-            position: "top-right",
-            autoClose: 3000,
-          });
-          navigate("/auth");
-          return;
-        }
-        throw new Error(data.message);
+      const data = await response.json();
+
+      if (response.status === 401) {
+        localStorage.removeItem("token");
+        setIsAuthenticated(false);
+        toast.error("Your session has expired. Please log in again.", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        navigate("/auth");
+        return;
       }
 
-      const data = await response.json();
-      console.log("Response from remove item:", data);
-
       if (data.status === "success") {
-        await fetchCart();
+        setCart((prevCart) =>
+          prevCart.filter((item) => item.cartId !== cartId)
+        );
         toast.success("Item removed from cart!", {
           position: "top-right",
           autoClose: 3000,
@@ -383,31 +359,17 @@ function MyHeader() {
           position: "top-right",
           autoClose: 3000,
         });
-        await fetchCart();
       }
     } catch (error) {
       console.error("Error removing item:", error);
-      toast.error(
-        `Error removing item: ${error.message || "Please try again."}`,
-        {
-          position: "top-right",
-          autoClose: 3000,
-        }
-      );
-      await fetchCart();
+      toast.error("Error removing item. Please try again.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
     }
   };
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   const navigateToBestProducts = () => {
-    // Navigate to best products page or scroll to best products section
     const bestProductsSection = document.querySelector(
       `.${styles.productListContainer}`
     );
@@ -416,76 +378,20 @@ function MyHeader() {
     }
   };
 
-  // Added brand navigation function
   const navigateToBrand = (brand) => {
     console.log(`Navigating to ${brand} products`);
-    // Implement brand navigation logic here
-    setShowBrandDropdown(false);
     setShowSidebarBrandDropdown(false);
     setIsMenuOpen(false);
   };
 
   return (
     <>
-      <header
-        className={`${styles.header} ${isScrolled ? styles.fixedHeader : ""}`}
-      >
-        <h1
-          className={`${styles.headerTitle} ${
-            isScrolled ? styles.showHeaderTitle : ""
-          }`}
-          onClick={() => navigate("/")}
-        >
+      {/* Header ban đầu (transparent) */}
+      <header className={styles.header}>
+        <h1 className={styles.headerTitle} onClick={() => navigate("/")}>
           TIRA
         </h1>
-
-        {/* Navigation Menu */}
-        <div
-          className={`${styles.navMenu} ${isScrolled ? styles.showNav : ""}`}
-        >
-          <div className={styles.navItem} onClick={navigateToBestProducts}>
-            Best Product
-          </div>
-          <div
-            className={styles.navItem}
-            onMouseEnter={() => setShowBrandDropdown(true)}
-            onMouseLeave={() => setShowBrandDropdown(false)}
-          >
-            Brand
-            {showBrandDropdown && (
-              <div className={styles.brandDropdown}>
-                <div
-                  className={styles.brandItem}
-                  onClick={() => navigateToBrand("Gucci")}
-                >
-                  Gucci
-                </div>
-                <div
-                  className={styles.brandItem}
-                  onClick={() => navigateToBrand("Calvin")}
-                >
-                  Calvin
-                </div>
-                <div
-                  className={styles.brandItem}
-                  onClick={() => navigateToBrand("Versace")}
-                >
-                  Versace
-                </div>
-                <div
-                  className={styles.brandItem}
-                  onClick={() => navigateToBrand("Zara")}
-                >
-                  Zara
-                </div>
-              </div>
-            )}
-          </div>
-          <div className={styles.navItem}>Store System</div>
-          <div className={styles.navItem}>Voucher</div>
-        </div>
-
-        <div className={`${styles.iconBox} ${isScrolled ? styles.flyUp : ""}`}>
+        <div className={styles.iconBox}>
           {!isAuthenticated && (
             <img
               src={userIcon}
@@ -494,7 +400,10 @@ function MyHeader() {
               onClick={() => navigate("/auth")}
             />
           )}
-          <div className={styles.cartContainer} onClick={handleCartClick}>
+          <div
+            className={styles.cartContainer}
+            onClick={() => setIsSidebarOpen(true)}
+          >
             <img src={cartIcon} alt="Cart Icon" className={styles.headerIcon} />
             {cart.length > 0 && (
               <span className={styles.cartCount}>{cart.length}</span>
@@ -506,8 +415,10 @@ function MyHeader() {
             className={styles.headerIcon}
             onClick={() => setIsSearchOpen(!isSearchOpen)}
           />
-          {/* Gọi Search component */}
-      <Search isSearchOpen={isSearchOpen} setIsSearchOpen={setIsSearchOpen} />
+          <Search
+            isSearchOpen={isSearchOpen}
+            setIsSearchOpen={setIsSearchOpen}
+          />
           <img
             src={barIcon}
             alt="Menu Icon"
@@ -516,19 +427,23 @@ function MyHeader() {
           />
         </div>
       </header>
-  
+
+      {/* Sử dụng FixedHeader component */}
+      <FixedHeader
+        isAuthenticated={isAuthenticated}
+        cart={cart}
+        setIsSidebarOpen={setIsSidebarOpen}
+        setIsMenuOpen={setIsMenuOpen} // Truyền setIsMenuOpen để mở sidebar
+        isSearchOpen={isSearchOpen}
+        setIsSearchOpen={setIsSearchOpen}
+      />
 
       <div className={styles.banner}>
         <img src={bannerGucci} className={styles.bannerImage} alt="Banner" />
-        <div
-          className={`${styles.bannerOverlay} ${
-            isScrolled ? styles.hidden : ""
-          }`}
-        >
+        <div className={styles.bannerOverlay}>
           <h1 className={styles.bannerTitle}>TIRA</h1>
         </div>
       </div>
-
       <div
         className={`${styles.overlay} ${isSidebarOpen ? styles.show : ""}`}
         onClick={closeSidebar}
@@ -537,7 +452,6 @@ function MyHeader() {
           visibility: isSidebarOpen ? "visible" : "hidden",
         }}
       ></div>
-
       <Cart
         isSidebarOpen={isSidebarOpen}
         closeSidebar={closeSidebar}
@@ -548,7 +462,6 @@ function MyHeader() {
         fetchCart={fetchCart}
         navigate={navigate}
       />
-
       <div className={`${styles.sidebarMenu} ${isMenuOpen ? styles.open : ""}`}>
         <button
           className={styles.closeBtn}
@@ -581,12 +494,26 @@ function MyHeader() {
           ) : (
             <li onClick={handleLogout}>Logout</li>
           )}
-          <li>My Account</li>
+          <li
+            onClick={() => {
+              if (isAuthenticated) {
+                navigate("/profile");
+              } else {
+                toast.error("Please log in to view your profile", {
+                  position: "top-right",
+                  autoClose: 3000,
+                });
+                navigate("/auth");
+              }
+              setIsMenuOpen(false);
+            }}
+          >
+            My Account
+          </li>
           <li>My Orders</li>
           <li>Contact Us</li>
         </ul>
       </div>
-
       <ProductList
         handleAddToCart={handleAddToCart}
         isAuthenticated={isAuthenticated}

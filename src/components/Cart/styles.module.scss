@@ -5,9 +5,11 @@
   width: 400px;
   height: 100%;
   background: #fff;
-  transition: right 0.3s ease;
-  z-index: 1000;
-  border-left: 1px solid #e5e5e5;
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+  transition: right 0.3s ease-in-out;
+  padding: 20px;
+  overflow-y: auto;
+  z-index: 1001;
 
   &.open {
     right: 0;
@@ -18,182 +20,180 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
-  background: #f5f5f5;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
 
   h2 {
-    margin: 0;
     font-size: 1.5rem;
-    font-weight: 700;
-    color: #222;
-    text-transform: uppercase;
+    color: #333;
+    margin: 0;
   }
 
-  .closeBtn {
+  .closeButton {
     background: none;
     border: none;
-    color: #222;
-    font-size: 1rem;
+    font-size: 2rem;
+    color: #888;
     cursor: pointer;
-    transition: color 0.3s ease;
-    text-transform: uppercase;
+    transition: color 0.2s;
 
     &:hover {
-      color: #555;
+      color: #333;
     }
   }
 }
 
 .cartItems {
-  padding: 20px;
-  max-height: 70vh;
-  overflow-y: auto;
-
-  p {
-    text-align: center;
-    color: #777;
-    font-size: 1.1rem;
-  }
-
-  .clearCartBtn {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    background: #e74c3c;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-    transition: background-color 0.3s ease;
-
-    &:hover {
-      background: #c0392b;
-    }
-  }
+  flex-grow: 1;
 }
 
 .cartItem {
   display: flex;
   align-items: center;
-  padding: 20px 0;
-  border-bottom: 1px solid #e5e5e5;
+  padding: 15px 0;
+  border-bottom: 1px solid #f5f5f5;
 
-  .cartItemImage {
-    width: 80px; // Tăng kích thước hình ảnh
+  .productImage {
+    width: 80px;
     height: 80px;
-    object-fit: cover; // Đảm bảo hình ảnh không bị méo
+    object-fit: cover;
     border-radius: 8px;
-    margin-right: 20px;
-    border: 1px solid #e5e5e5; // Thêm viền nhẹ cho hình ảnh
+    margin-right: 15px;
   }
 
-  .cartItemDetails {
-    flex: 1;
+  .itemDetails {
+    flex-grow: 1;
 
     h4 {
-      margin: 0 0 8px;
-      font-size: 1.2rem;
-      color: #222;
-      text-transform: uppercase;
+      font-size: 1.1rem;
+      color: #333;
+      margin: 0 0 5px;
     }
 
-    p {
-      margin: 5px 0;
-      font-size: 0.9rem;
-      color: #777;
+    .price {
+      color: #666;
+      font-size: 0.95rem;
+      margin-bottom: 10px;
     }
 
-    .quantityControl {
+    .quantityControls {
       display: flex;
       align-items: center;
-      margin: 10px 0;
+      gap: 10px;
 
       button {
-        width: 35px;
-        height: 35px;
-        background: #f5f5f5;
-        color: #222;
-        border: 1px solid #e5e5e5;
-        border-radius: 5px;
+        width: 30px;
+        height: 30px;
+        background: #f0f0f0;
+        border: none;
+        border-radius: 50%;
+        font-size: 1rem;
         cursor: pointer;
-        transition: background-color 0.3s ease;
+        transition: background 0.2s;
 
         &:hover {
-          background: #e5e5e5;
+          background: #ddd;
+        }
+
+        &:disabled {
+          background: #e0e0e0;
+          cursor: not-allowed;
         }
       }
 
-      input {
-        width: 50px;
-        text-align: center;
-        margin: 0 10px;
-        padding: 5px;
-        border: 1px solid #e5e5e5;
-        border-radius: 5px;
-        background: #fff;
-        color: #222;
+      span {
+        font-size: 1rem;
+        color: #333;
       }
     }
 
-    .removeBtn {
-      background: transparent;
-      color: #222;
-      border: 1px solid #e5e5e5;
-      padding: 8px 15px;
-      border-radius: 5px;
+    .removeButton {
+      background: none;
+      border: none;
+      color: #ff5555;
+      font-size: 0.9rem;
       cursor: pointer;
-      transition: background-color 0.3s ease, color 0.3s ease;
-      text-transform: uppercase;
+      margin-top: 10px;
+      transition: color 0.2s;
 
       &:hover {
-        background: #f5f5f5;
+        color: #cc0000;
       }
     }
   }
 }
 
+.emptyMessage {
+  text-align: center;
+  color: #888;
+  font-size: 1.1rem;
+  padding: 20px 0;
+}
+
 .cartFooter {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  padding: 20px;
-  background: #fff;
-  border-top: 1px solid #e5e5e5;
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+  margin-top: 20px;
 
-  h3 {
-    margin: 0 0 15px;
-    font-size: 1.5rem;
-    color: #222;
-    text-align: center;
-    font-weight: 700;
-  }
+  .total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
 
-  .checkoutBtn {
-    display: block;
-    width: 365px;
-    padding: 15px;
-    background: #000;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    text-transform: uppercase;
-
-    &:hover {
-      background: #333;
+    span {
+      font-size: 1.1rem;
+      color: #666;
     }
 
-    &:disabled {
-      background: #ccc;
-      cursor: not-allowed;
+    h3 {
+      font-size: 1.5rem;
+      color: #333;
+      margin: 0;
+    }
+  }
+
+  .footerButtons {
+    display: flex;
+    gap: 10px;
+
+    .clearCartButton {
+      flex: 1;
+      padding: 12px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      color: #666;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        background: #f5f5f5;
+        border-color: #bbb;
+      }
+    }
+
+    .checkoutButton {
+      flex: 1;
+      padding: 12px;
+      background: #007bff;
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+
+      &:hover {
+        background: #0056b3;
+      }
+
+      &:disabled {
+        background: #aaa;
+        cursor: not-allowed;
+      }
     }
   }
 }

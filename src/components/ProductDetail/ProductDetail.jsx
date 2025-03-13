@@ -1,23 +1,32 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import styles from "./styles.module.scss";
-import ProductReview from "../ProductReview/ProductReview"; // Import the ProductReview component
+import ProductReview from "../ProductReview/ProductReview";
+import Footer from "../Footer/Footer";
+import FixedHeader from "../Header/FixedHeader";
+import Cart from "../Cart/Cart"; // Import Cart component
+import { useAppContext } from "../../Context/AppContext"; // Import Context
 
 function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const {
+    isAuthenticated,
+    setIsAuthenticated,
+    cart,
+    setCart,
+    isSidebarOpen,
+    setIsSidebarOpen,
+    fetchCart, // Sử dụng fetchCart từ Context
+  } = useAppContext(); // Lấy trạng thái và hàm từ Context
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedSize, setSelectedSize] = useState("M");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsAuthenticated(!!token);
-
     const fetchProduct = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -75,6 +84,7 @@ function ProductDetail() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
+        setIsAuthenticated(false);
         toast.error("Please log in to add items to cart", {
           position: "top-right",
           autoClose: 3000,
@@ -101,12 +111,6 @@ function ProductDetail() {
         return;
       }
 
-      console.log("Adding to cart with:", {
-        productId: parsedProductId,
-        quantity: 1,
-        size: selectedSize,
-      });
-
       const response = await fetch("http://localhost:8080/tirashop/cart/add", {
         method: "POST",
         headers: {
@@ -132,13 +136,13 @@ function ProductDetail() {
       }
 
       const data = await response.json();
-      console.log("Response from add to cart:", data);
-
       if (data.status === "success") {
         toast.success("Product added to cart!", {
           position: "top-right",
           autoClose: 3000,
         });
+        await fetchCart(); // Cập nhật giỏ hàng từ Context
+        setIsSidebarOpen(true); // Mở sidebar sau khi thêm sản phẩm
         setTimeout(() => {
           navigate("/");
         }, 1500);
@@ -165,63 +169,70 @@ function ProductDetail() {
   if (!product) return <p>Product not found</p>;
 
   return (
-    <div className={styles.productDetailPage}>
-      <div className={styles.productDetailContainer}>
-        <div className={styles.productDetail}>
-          <div className={styles.productImageWrapper}>
-            <img
-              src={
-                product.imageUrls && product.imageUrls.length > 0
-                  ? `http://localhost:8080${product.imageUrls[0]}`
-                  : "https://via.placeholder.com/300"
-              }
-              alt={product.name}
-              className={styles.productImage}
-            />
-          </div>
-          <div className={styles.productInfo}>
-            <h2>{product.name}</h2>
-            <p className={styles.brandCategory}>
-              {product.brandName} | {product.categoryName}
-            </p>
-            <p className={styles.price}>${product.price.toFixed(2)}</p>
-            <p className={styles.description}>
-              {product.description || "No description available"}
-            </p>
-            <div className={styles.sizeSelector}>
-              <label>Select Size:</label>
-              <select
-                value={selectedSize}
-                onChange={(e) => setSelectedSize(e.target.value)}
-              >
-                <option value="S">S</option>
-                <option value="M">M</option>
-                <option value="L">L</option>
-              </select>
+    <>
+      {/* FixedHeader không cần truyền props nữa vì dùng Context */}
+      <FixedHeader />
+      {/* Nhúng Cart để hiển thị sidebar giỏ hàng */}
+      <Cart />
+      <div className={styles.productDetailPage}>
+        <div className={styles.productDetailContainer}>
+          <div className={styles.productDetail}>
+            <div className={styles.productImageWrapper}>
+              <img
+                src={
+                  product.imageUrls && product.imageUrls.length > 0
+                    ? `http://localhost:8080${product.imageUrls[0]}`
+                    : "https://via.placeholder.com/300"
+                }
+                alt={product.name}
+                className={styles.productImage}
+              />
             </div>
-            {isAuthenticated ? (
-              <button
-                onClick={handleAddToCart}
-                className={styles.addToCartBtn}
-                disabled={isAdding}
-              >
-                {isAdding ? "Adding..." : "Add to Cart"}
-              </button>
-            ) : (
-              <button
-                onClick={() => navigate("/auth")}
-                className={styles.addToCartBtn}
-              >
-                Sign In to Add
-              </button>
-            )}
+            <div className={styles.productInfo}>
+              <h2>{product.name}</h2>
+              <p className={styles.brandCategory}>
+                {product.brandName} | {product.categoryName}
+              </p>
+              <p className={styles.price}>${product.price.toFixed(2)}</p>
+              <p className={styles.description}>
+                {product.description || "No description available"}
+              </p>
+              <div className={styles.sizeSelector}>
+                <label>Select Size:</label>
+                <select
+                  value={selectedSize}
+                  onChange={(e) => setSelectedSize(e.target.value)}
+                >
+                  <option value="S">S</option>
+                  <option value="M">M</option>
+                  <option value="L">L</option>
+                </select>
+              </div>
+              {isAuthenticated ? (
+                <button
+                  onClick={handleAddToCart}
+                  className={styles.addToCartBtn}
+                  disabled={isAdding}
+                >
+                  {isAdding ? "Adding..." : "Add to Cart"}
+                </button>
+              ) : (
+                <button
+                  onClick={() => navigate("/auth")}
+                  className={styles.addToCartBtn}
+                >
+                  Sign In to Add
+                </button>
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Add the ProductReview component */}
-      <ProductReview />
-    </div>
+        {/* ProductReview component */}
+        <ProductReview />
+      </div>
+      <Footer />
+    </>
   );
 }
 
