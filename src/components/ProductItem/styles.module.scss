@@ -312,3 +312,24 @@
     }
   }
 }
+.loadingContainer,
+.errorContainer {
+  text-align: center;
+  padding: 20px;
+  font-size: 18px;
+}
+
+.productImage {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.carousel-container {
+  padding: 0 10px;
+}
+
+.carousel-item {
+  padding: 0 5px;
+}

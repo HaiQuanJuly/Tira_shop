@@ -78,44 +78,82 @@ function PostList() {
     navigate(`/post/${postId}`);
   };
 
-  if (loading) return <p>Loading posts...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (loading)
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.spinner}></div>
+        <p>Loading posts...</p>
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className={styles.errorContainer}>
+        <div className={styles.errorIcon}>!</div>
+        <p>Error: {error}</p>
+      </div>
+    );
 
   return (
     <div className={styles.postListContainer}>
-      <h2 className={styles.postTitle}>Posts</h2>
-      <div className={styles.postGrid}>
-        {posts.length > 0 ? (
-          posts.map((post) => (
+      <div className={styles.postHeader}>
+        <h2 className={styles.postTitle}>Featured Posts</h2>
+        <div className={styles.postFilter}>
+          <span className={styles.activeFilter}>All</span>
+          <span>Latest</span>
+          <span>Popular</span>
+        </div>
+      </div>
+
+      {posts.length > 0 ? (
+        <div className={styles.postGrid}>
+          {posts.map((post) => (
             <div
               key={post.id}
-              className={styles.postItem}
+              className={styles.postCard}
               onClick={() => handlePostClick(post.id)}
             >
-              <img
-                src={post.imageUrl || "https://via.placeholder.com/250"}
-                alt={post.name || "Post Image"}
-                className={styles.postImage}
-              />
+              <div className={styles.postImageWrapper}>
+                <img
+                  src={post.imageUrl || "https://via.placeholder.com/250"}
+                  alt={post.name || "Post Image"}
+                  className={styles.postImage}
+                />
+                <div className={styles.postTopic}>
+                  {post.topic || "No Topic"}
+                </div>
+              </div>
               <div className={styles.postDetails}>
                 <h3 className={styles.postName}>{post.name || "Untitled"}</h3>
-                <p className={styles.postTopic}>{post.topic || "No Topic"}</p>
-                <p className={styles.postAuthor}>
-                  {post.authorName || "Anonymous"}
-                </p>
-                <p className={styles.postDate}>
-                  {new Date(post.createdAt).toLocaleDateString()}
-                </p>
                 <p className={styles.postShortDescription}>
                   {post.shortDescription || "No description available"}
                 </p>
+                <div className={styles.postMeta}>
+                  <div className={styles.postAuthorInfo}>
+                    <div className={styles.postAuthorAvatar}>
+                      {(post.authorName || "A")[0].toUpperCase()}
+                    </div>
+                    <span className={styles.postAuthorName}>
+                      {post.authorName || "Anonymous"}
+                    </span>
+                  </div>
+                  <span className={styles.postDate}>
+                    {new Date(post.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
               </div>
             </div>
-          ))
-        ) : (
-          <p>No posts available</p>
-        )}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className={styles.emptyPostContainer}>
+          <div className={styles.emptyPostIcon}>📭</div>
+          <p>No posts available at the moment</p>
+          <button className={styles.refreshButton} onClick={fetchPosts}>
+            Refresh
+          </button>
+        </div>
+      )}
     </div>
   );
 }

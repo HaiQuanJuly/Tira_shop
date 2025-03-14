@@ -1,5 +1,4 @@
-// src/components/Cart/Cart.js
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import styles from "./styles.module.scss";
@@ -17,12 +16,17 @@ function Cart() {
 
   const closeSidebar = () => setIsSidebarOpen(false);
 
-  const handleQuantityChange = async (cartItem) => {
+  const handleQuantityChange = async (cartItem, newQuantity) => {
     const token = localStorage.getItem("token");
     if (!token) {
       toast.error("Please log in to update your cart");
       closeSidebar();
       navigate("/auth");
+      return;
+    }
+
+    if (newQuantity < 1) {
+      handleRemoveItem(cartItem.cartId);
       return;
     }
 
@@ -38,8 +42,8 @@ function Cart() {
           body: JSON.stringify({
             id: cartItem.id,
             cartId: cartItem.cartId,
-            quantity: cartItem.quantity,
-            productSize: cartItem.productSize,
+            quantity: newQuantity,
+            productSize: cartItem.size || cartItem.productSize,
           }),
         }
       );
@@ -51,6 +55,7 @@ function Cart() {
         navigate("/auth");
         return;
       }
+
       if (data.status === "success") {
         toast.success("Cart updated successfully!");
         await fetchCart();
@@ -58,11 +63,11 @@ function Cart() {
         toast.error(`Failed to update cart: ${data.message}`);
       }
     } catch (error) {
+      console.error("Error updating cart:", error);
       toast.error("Error updating cart. Please try again.");
     }
   };
 
-  // Áp dụng tương tự cho `handleRemoveItem` và `clearCart`
   const handleRemoveItem = async (cartId) => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -98,6 +103,7 @@ function Cart() {
         toast.error(`Failed to remove item: ${data.message}`);
       }
     } catch (error) {
+      console.error("Error removing item:", error);
       toast.error("Error removing item. Please try again.");
     }
   };
@@ -124,14 +130,53 @@ function Cart() {
       );
 
       const data = await response.json();
+      console.log("Clear cart response:", data); // Debug
+
+      if (response.status === 401) {
+        localStorage.removeItem("token");
+        toast.error("Your session has expired. Please log in again.");
+        navigate("/auth");
+        return;
+      }
+
       if (data.status === "success") {
         toast.success("Cart cleared successfully!");
-        await fetchCart();
+        await fetchCart(); // Cập nhật giỏ hàng từ server
+        console.log("Cart after clear:", cart); // Debug
       } else {
         toast.error(`Failed to clear cart: ${data.message}`);
+        setCart([]); // Đặt lại cart về rỗng nếu API không cập nhật đúng
       }
     } catch (error) {
+      console.error("Error clearing cart:", error);
       toast.error("Error clearing cart. Please try again.");
+      setCart([]); // Đặt lại cart về rỗng trong trường hợp lỗi
+    }
+  };
+
+  const handleCheckout = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Please log in to checkout");
+      closeSidebar();
+      navigate("/auth");
+      return;
+    }
+
+    setIsCheckingOut(true);
+    try {
+      if (cart.length === 0) {
+        toast.error("Your cart is empty");
+        setIsCheckingOut(false);
+        return;
+      }
+      closeSidebar();
+      navigate("/checkout");
+    } catch (error) {
+      console.error("Error during checkout:", error);
+      toast.error("Error occurred. Please try again.");
+    } finally {
+      setIsCheckingOut(false);
     }
   };
 
@@ -165,26 +210,16 @@ function Cart() {
                 <div className={styles.quantityControls}>
                   <button
                     onClick={() =>
-                      handleQuantityChange({
-                        ...item,
-                        quantity: item.quantity - 1,
-                      })
+                      handleQuantityChange(item, item.quantity - 1)
                     }
                     disabled={item.quantity <= 1}
-                  >
-                    -
-                  </button>
+                  ></button>
                   <span>{item.quantity}</span>
                   <button
                     onClick={() =>
-                      handleQuantityChange({
-                        ...item,
-                        quantity: item.quantity + 1,
-                      })
+                      handleQuantityChange(item, item.quantity + 1)
                     }
-                  >
-                    +
-                  </button>
+                  ></button>
                 </div>
                 <button
                   className={styles.removeButton}
@@ -209,9 +244,9 @@ function Cart() {
               Clear Cart
             </button>
             <button
-              onClick={() => navigate("/checkout")}
+              onClick={handleCheckout}
               className={styles.checkoutButton}
-              disabled={isCheckingOut}
+              disabled={isCheckingOut || cart.length === 0}
             >
               {isCheckingOut ? "Processing..." : "Checkout"}
             </button>

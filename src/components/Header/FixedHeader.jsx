@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import styles from "./styles.module.scss";
@@ -149,9 +149,7 @@ function FixedHeader() {
 
         <div className={`${styles.iconBox} ${isScrolled ? styles.flyUp : ""}`}>
           {isAuthenticated ? (
-            <span className={styles.headerIcon} onClick={handleLogout}>
-              Logout
-            </span>
+            <span className={styles.headerIcon} onClick={handleLogout}></span>
           ) : (
             <img
               src={userIcon}

@@ -1,9 +1,10 @@
 // src/context/AppContext.js
-import { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { toast } from "react-toastify";
 
 const AppContext = createContext();
 
-export function AppProvider({ children }) {
+export const AppProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [cart, setCart] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -12,47 +13,68 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    setIsAuthenticated(!!token);
     if (token) {
-      // Kiểm tra token khi ứng dụng khởi động
-      fetch("http://localhost:8080/tirashop/auth/validate-token", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          setIsAuthenticated(
-            response.status === 200 && data.status === "success"
-          );
-          if (data.status === "success") fetchCart(); // Tải giỏ hàng nếu đã xác thực
-        })
-        .catch(() => setIsAuthenticated(false));
+      fetchCart();
+    } else {
+      setCart([]);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   const fetchCart = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
     try {
-      const response = await fetch("http://localhost:8080/tirashop/cart", {
-        headers: { Authorization: `Bearer ${token}` },
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setCart([]);
+        setIsAuthenticated(false);
+        return;
+      }
+
+      const response = await fetch("http://localhost:8080/tirashop/cart/list", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+
+      if (response.status === 401) {
+        localStorage.removeItem("token");
+        setIsAuthenticated(false);
+        setCart([]);
+        toast.error("Your session has expired. Please log in again.");
+        return;
+      }
+
       const data = await response.json();
-      if (data.status === "success") setCart(data.data || []);
+      console.log("Fetch cart response:", data); // Debug
+      if (data.status === "success") {
+        const validSizes = ["S", "M", "L"];
+        const parsedCart = (data.data.items || []).map((item) => ({
+          id: item.id,
+          cartId: parseInt(item.cartId),
+          productId: parseInt(item.productId),
+          productName: item.productName,
+          productPrice: parseFloat(item.productPrice),
+          quantity: parseInt(item.quantity),
+          size: validSizes.includes(item.size) ? item.size : "M",
+          productImage: item.productImage
+            ? `http://localhost:8080${item.productImage}`
+            : null,
+        }));
+        setCart(parsedCart);
+      } else {
+        setCart([]); // Đặt về rỗng nếu không thành công
+      }
     } catch (error) {
       console.error("Error fetching cart:", error);
+      setCart([]); // Đặt về rỗng nếu lỗi
     }
   };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("userId");
-    localStorage.removeItem("username");
     setIsAuthenticated(false);
     setCart([]);
+    setIsMenuOpen(false);
     toast.success("Logged out successfully!");
   };
 
@@ -76,6 +98,6 @@ export function AppProvider({ children }) {
       {children}
     </AppContext.Provider>
   );
-}
+};
 
 export const useAppContext = () => useContext(AppContext);

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import styles from "./styles.module.scss";
+import styles from "./styles.module.scss"; // Sử dụng styles mới
 import Footer from "../Footer/Footer";
 
 function UserProfile() {
@@ -155,7 +155,7 @@ function UserProfile() {
         }
       }
 
-      // Chỉ thêm các trường cần thiết, loại bỏ newUsername
+      // Chỉ thêm các trường cần thiết
       const fieldsToSend = [
         "firstName",
         "lastName",
@@ -176,11 +176,6 @@ function UserProfile() {
         formDataToSend.append("avatar", avatarFile);
       }
 
-      console.log(
-        "Sending form data:",
-        Object.fromEntries(formDataToSend.entries())
-      );
-
       const response = await fetch(
         "http://localhost:8080/tirashop/user/update-profile",
         {
@@ -193,7 +188,6 @@ function UserProfile() {
       );
 
       const data = await response.json();
-      console.log("PUT response:", data);
 
       if (response.status === 401) {
         localStorage.removeItem("token");
@@ -300,11 +294,14 @@ function UserProfile() {
               </div>
 
               <div className={styles.profileDetails}>
+                <h2 className={styles.username}>
+                  {userProfile?.firstName} {userProfile?.lastName}
+                </h2>
+
                 <div className={styles.infoRow}>
-                  <div className={styles.infoLabel}>Full Name: </div>
-                  <h2 className={styles.username}>{userProfile?.username}</h2>
+                  <div className={styles.infoLabel}>Username:</div>
                   <div className={styles.infoValue}>
-                    {userProfile?.firstName} {userProfile?.lastName}
+                    {userProfile?.username}
                   </div>
                 </div>
 
@@ -315,7 +312,9 @@ function UserProfile() {
 
                 <div className={styles.infoRow}>
                   <div className={styles.infoLabel}>Phone:</div>
-                  <div className={styles.infoValue}>{userProfile?.phone}</div>
+                  <div className={styles.infoValue}>
+                    {userProfile?.phone || "Not provided"}
+                  </div>
                 </div>
 
                 <div className={styles.infoRow}>
@@ -327,13 +326,15 @@ function UserProfile() {
 
                 <div className={styles.infoRow}>
                   <div className={styles.infoLabel}>Gender:</div>
-                  <div className={styles.infoValue}>{userProfile?.gender}</div>
+                  <div className={styles.infoValue}>
+                    {userProfile?.gender || "Not provided"}
+                  </div>
                 </div>
 
                 <div className={styles.infoRow}>
                   <div className={styles.infoLabel}>Birthday:</div>
                   <div className={styles.infoValue}>
-                    {formatDate(userProfile?.birthday)}
+                    {formatDate(userProfile?.birthday) || "Not provided"}
                   </div>
                 </div>
 
@@ -488,7 +489,7 @@ function UserProfile() {
           )}
         </div>
       </div>
-      <Footer></Footer>
+      <Footer />
     </>
   );
 }
