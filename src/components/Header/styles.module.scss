@@ -12,6 +12,7 @@
   z-index: 1000;
   transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
   pointer-events: none; /* Make header transparent to clicks initially */
+  height: 126px;
 
   &.fixedHeader {
     background: rgba(255, 255, 255, 0.95);

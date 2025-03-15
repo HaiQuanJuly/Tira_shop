@@ -1,72 +1,39 @@
+// src/components/Checkout/CheckoutPage.jsx
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import styles from "./styles.module.scss";
-import { useAppContext } from "../../Context/AppContext"; // Sử dụng AppContext
+import { useAppContext } from "../../context/AppContext";
 import Footer from "../Footer/Footer";
+import VoucherForm from "../Voucher/VoucherForm";
 
 function CheckoutPage() {
-  const { cart, fetchCart } = useAppContext(); // Lấy cart từ context
+  const { cart, fetchCart, setCart } = useAppContext();
   const navigate = useNavigate();
   const [shippingAddress, setShippingAddress] = useState("");
   const [voucherCode, setVoucherCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [voucherDiscount, setVoucherDiscount] = useState(0); // Giảm giá từ voucher
-  const shippingFee = 5.0; // Phí vận chuyển cố định (có thể thay đổi)
+  const [voucherDiscount, setVoucherDiscount] = useState(0);
+  const shippingFee = 5.0;
 
-  // Tính toán tổng tiền
-  const subtotal = cart.reduce(
-    (sum, item) => sum + item.productPrice * item.quantity,
-    0
-  );
-  const total = subtotal + shippingFee - voucherDiscount;
-
-  // Kiểm tra giỏ hàng khi tải trang
   useEffect(() => {
+    console.log("Cart in CheckoutPage:", cart); // Debug
     const token = localStorage.getItem("token");
     if (!token) {
       toast.error("Please log in to proceed to checkout");
       navigate("/auth");
       return;
     }
-    fetchCart(); // Đồng bộ giỏ hàng từ server
+    fetchCart();
   }, [navigate, fetchCart]);
 
-  // Xử lý áp dụng voucher (giả lập API)
-  const applyVoucher = async () => {
-    if (!voucherCode) return;
-    setLoading(true);
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        "http://localhost:8080/tirashop/voucher/apply",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ voucherCode }),
-        }
-      );
-      const data = await response.json();
-      if (data.status === "success") {
-        setVoucherDiscount(data.discount || 0); // Giả sử API trả về discount
-        toast.success("Voucher applied successfully!");
-      } else {
-        setVoucherDiscount(0);
-        toast.error(data.message || "Invalid voucher code");
-      }
-    } catch (err) {
-      setVoucherDiscount(0);
-      toast.error("Error applying voucher");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const subtotal = cart.reduce(
+    (sum, item) => sum + (item.productPrice || 0) * (item.quantity || 0),
+    0
+  );
+  const total = subtotal + shippingFee - voucherDiscount;
 
-  // Xử lý đặt hàng
   const handleCheckout = async (e) => {
     e.preventDefault();
     if (cart.length === 0) {
@@ -96,14 +63,14 @@ function CheckoutPage() {
         },
         body: JSON.stringify({
           shippingAddress,
-          voucherCode: voucherCode || null,
-          totalAmount: total, // Gửi tổng tiền để server kiểm tra
+          voucherCode: voucherDiscount > 0 ? voucherCode : null, // Gửi mã voucher nếu áp dụng
+          totalAmount: total,
         }),
       });
       const data = await response.json();
       if (data.status === "success") {
         toast.success("Order placed successfully!");
-        setCart([]); // Xóa giỏ hàng trong context
+        setCart([]);
         setTimeout(() => navigate("/"), 1500);
       } else {
         setError(data.message || "Checkout failed");
@@ -127,7 +94,6 @@ function CheckoutPage() {
           </p>
         ) : (
           <div className={styles.checkoutContainer}>
-            {/* Cột tóm tắt đơn hàng */}
             <div className={styles.orderSummary}>
               <h2>Order Summary</h2>
               <div className={styles.cartItems}>
@@ -137,18 +103,22 @@ function CheckoutPage() {
                       src={
                         item.productImage || "https://via.placeholder.com/60"
                       }
-                      alt={item.productName}
+                      alt={item.productName || "Product"}
                       className={styles.itemImage}
                     />
                     <div className={styles.itemDetails}>
-                      <h3>{item.productName}</h3>
+                      <h3>{item.productName || "Unknown Product"}</h3>
                       <p>
-                        ${item.productPrice.toFixed(2)} × {item.quantity}
+                        ${(item.productPrice || 0).toFixed(2)} ×{" "}
+                        {item.quantity || 0}
                       </p>
                       <p>Size: {item.size || "N/A"}</p>
                     </div>
                     <p className={styles.itemTotal}>
-                      ${(item.productPrice * item.quantity).toFixed(2)}
+                      $
+                      {(
+                        (item.productPrice || 0) * (item.quantity || 0)
+                      ).toFixed(2)}
                     </p>
                   </div>
                 ))}
@@ -170,8 +140,6 @@ function CheckoutPage() {
                 </h3>
               </div>
             </div>
-
-            {/* Cột thông tin thanh toán */}
             <div className={styles.checkoutFormContainer}>
               <h2>Shipping & Payment</h2>
               <form onSubmit={handleCheckout} className={styles.checkoutForm}>
@@ -186,26 +154,12 @@ function CheckoutPage() {
                     className={styles.addressInput}
                   />
                 </div>
-                <div className={styles.formSection}>
-                  <h3>Voucher (Optional)</h3>
-                  <div className={styles.voucherInput}>
-                    <input
-                      type="text"
-                      value={voucherCode}
-                      onChange={(e) => setVoucherCode(e.target.value)}
-                      placeholder="Enter voucher code"
-                      className={styles.voucherField}
-                    />
-                    <button
-                      type="button"
-                      onClick={applyVoucher}
-                      disabled={loading || !voucherCode}
-                      className={styles.applyVoucherBtn}
-                    >
-                      Apply
-                    </button>
-                  </div>
-                </div>
+                <VoucherForm
+                  subtotal={subtotal}
+                  setVoucherDiscount={setVoucherDiscount}
+                  voucherCode={voucherCode}
+                  setVoucherCode={setVoucherCode}
+                />
                 {error && <p className={styles.errorMessage}>{error}</p>}
                 <button
                   type="submit"
@@ -219,7 +173,7 @@ function CheckoutPage() {
           </div>
         )}
       </div>
-      <Footer></Footer>
+      <Footer />
     </>
   );
 }

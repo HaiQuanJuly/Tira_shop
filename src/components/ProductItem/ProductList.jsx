@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import styles from "./styles.module.scss";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { useAppContext } from "../../Context/AppContext";
+import React from "react"; // Thêm React để sử dụng React.memo
 
 const responsive = {
   superLargeDesktop: { breakpoint: { max: 4000, min: 3000 }, items: 5 },
@@ -21,91 +22,108 @@ function ProductList({ isAuthenticated }) {
   const navigate = useNavigate();
   const { fetchCart, setIsSidebarOpen } = useAppContext();
 
-  useEffect(() => {
+  // Memoize fetchProducts để tránh gọi lại không cần thiết
+  const fetchProducts = useCallback(async () => {
     console.log("Fetching products...");
-    fetch("http://localhost:8080/tirashop/product", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        console.log("Response status:", response.status);
-        return response.json();
-      })
-      .then((data) => {
-        console.log("API data:", data);
-        if (data.status === "success") {
-          const productList = data.data.elementList || [];
-          setProducts(productList);
-          const initialSizes = {};
-          productList.forEach((product) => {
-            initialSizes[product.id] = "M";
-          });
-          setSelectedSizes(initialSizes);
-        } else {
-          setError("Failed to fetch products");
-        }
-      })
-      .catch((err) => {
-        console.error("Fetch error:", err);
-        setError(err.message);
-      })
-      .finally(() => setLoading(false));
+    setLoading(true);
+    try {
+      const response = await fetch("http://localhost:8080/tirashop/product", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Response status:", response.status);
+      const data = await response.json();
+      console.log("API data:", data);
+      if (data.status === "success") {
+        const productList = data.data.elementList || [];
+        setProducts(productList);
+        const initialSizes = productList.reduce((acc, product) => {
+          acc[product.id] = "M";
+          return acc;
+        }, {});
+        setSelectedSizes(initialSizes);
+      } else {
+        setError("Failed to fetch products");
+      }
+    } catch (err) {
+      console.error("Fetch error:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const handleProductClick = (productId) => {
-    navigate(`/product/${productId}`);
-  };
+  // Chỉ gọi fetchProducts một lần khi component mount
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
-  const handleSizeChange = (productId, size) => {
+  const handleProductClick = useCallback(
+    (productId) => {
+      navigate(`/product/${productId}`);
+    },
+    [navigate]
+  );
+
+  const handleSizeChange = useCallback((productId, size) => {
     setSelectedSizes((prev) => ({
       ...prev,
       [productId]: size,
     }));
-  };
+  }, []);
 
-  const handleAddToCart = async (product) => {
-    const token = localStorage.getItem("token");
-    if (!token || !isAuthenticated) {
-      toast.error("Please log in to add to cart");
-      navigate("/auth");
-      return;
-    }
-
-    try {
-      const response = await fetch("http://localhost:8080/tirashop/cart/add", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          productId: product.id,
-          quantity: 1,
-          productSize: selectedSizes[product.id] || "M", // Đổi sang productSize để đồng bộ với API
-        }),
-      });
-
-      const data = await response.json();
-      if (response.ok && data.status === "success") {
-        toast.success("Added to cart successfully!");
-        await fetchCart(); // Cập nhật giỏ hàng
-        setIsSidebarOpen(true); // Mở sidebar
-      } else {
-        toast.error(
-          `Failed to add to cart: ${data.message || "Unknown error"}`
-        );
+  const handleAddToCart = useCallback(
+    async (product) => {
+      const token = localStorage.getItem("token");
+      if (!token || !isAuthenticated) {
+        toast.error("Please log in to add to cart");
+        navigate("/auth");
+        return;
       }
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-      toast.error("Error adding to cart. Please try again.");
-    }
-  };
+
+      try {
+        const response = await fetch(
+          "http://localhost:8080/tirashop/cart/add",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              productId: product.id,
+              quantity: 1,
+              productSize: selectedSizes[product.id] || "M",
+            }),
+          }
+        );
+
+        const data = await response.json();
+        if (response.ok && data.status === "success") {
+          toast.success("Added to cart successfully!");
+          await fetchCart();
+          setIsSidebarOpen(true);
+        } else {
+          toast.error(
+            `Failed to add to cart: ${data.message || "Unknown error"}`
+          );
+        }
+      } catch (error) {
+        console.error("Error adding to cart:", error);
+        toast.error("Error adding to cart. Please try again.");
+      }
+    },
+    [isAuthenticated, navigate, fetchCart, setIsSidebarOpen, selectedSizes]
+  );
+
+  // Memoize danh sách sản phẩm để tránh re-render không cần thiết trong Carousel
+  const memoizedProducts = useMemo(() => products, [products]);
 
   if (loading) return <p>Loading products...</p>;
   if (error) return <p>Error: {error}</p>;
-  if (products.length === 0) return <p>No products available.</p>;
+  if (memoizedProducts.length === 0) return <p>No products available.</p>;
 
   return (
     <div className={styles.productListContainer}>
@@ -114,12 +132,12 @@ function ProductList({ isAuthenticated }) {
         <Carousel
           responsive={responsive}
           className={styles.productGrid}
-          infinite={true} // Vòng lặp vô hạn
-          autoPlay={false} // Tắt tự động chạy, bạn có thể bật nếu muốn
-          keyBoardControl={true} // Cho phép điều khiển bằng bàn phím
-          showDots={true} // Hiển thị chấm điều hướng
+          infinite={true}
+          autoPlay={false}
+          keyBoardControl={true}
+          showDots={true}
         >
-          {products.map((product) => (
+          {memoizedProducts.map((product) => (
             <div key={product.id} className={styles.productItem}>
               <div
                 className={styles.boxImg}
@@ -181,4 +199,7 @@ function ProductList({ isAuthenticated }) {
   );
 }
 
-export default ProductList;
+// Memoize component để tránh re-render không cần thiết khi props không thay đổi
+export default React.memo(ProductList, (prevProps, nextProps) => {
+  return prevProps.isAuthenticated === nextProps.isAuthenticated;
+});

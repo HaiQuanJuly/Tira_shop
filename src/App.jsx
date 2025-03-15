@@ -1,3 +1,4 @@
+// src/App.jsx
 import {
   BrowserRouter as Router,
   Routes,
@@ -6,7 +7,7 @@ import {
 } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { AppProvider, useAppContext } from "./context/AppContext"; // Đảm bảo đường dẫn đúng
+import { AppProvider, useAppContext } from "./context/AppContext";
 import HomePage from "./components/HomePage/HomePage";
 import AuthPage from "./components/Auth/AuthPage";
 import CheckoutPage from "./components/Checkout/CheckoutPage";
@@ -17,11 +18,13 @@ import SetNewPasswordPage from "./components/Auth/SetNewPasswordPage";
 import UserProfile from "./components/UserProfile/UserProfile";
 import FixedHeader from "./components/Header/FixedHeader";
 import Cart from "./components/Cart/Cart";
+import VoucherPage from "./components/Voucher/VoucherPage";
 import "./assets/style/toastifyCustom.module.scss";
 
 // Protected Route Component để bảo vệ các route cần đăng nhập
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useAppContext();
+  console.log("isAuthenticated in ProtectedRoute:", isAuthenticated); // Debug
   return isAuthenticated ? children : <Navigate to="/auth" />;
 };
 
@@ -69,8 +72,17 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/vouchers"
+                element={
+                  <ProtectedRoute>
+                    <VoucherPage />
+                  </ProtectedRoute>
+                }
+              />
 
               {/* 404 Route */}
+              <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </main>
         </div>
@@ -85,7 +97,7 @@ function App() {
           draggable
           pauseOnHover
           theme="dark"
-          toastStyle={{ fontSize: "1rem", fontFamily: "Poppins, sans-serif" }} // Tùy chỉnh style toast
+          toastStyle={{ fontSize: "1rem", fontFamily: "Poppins, sans-serif" }}
         />
       </Router>
     </AppProvider>
