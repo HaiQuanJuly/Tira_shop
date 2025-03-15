@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import styles from "./styles.module.scss";
 import userIcon from "../../assets/icons/svgs/userIcon.svg";
@@ -10,11 +10,12 @@ import closeIcon from "../../assets/icons/svgs/close.svg";
 import bannerGucci from "../../assets/icons/images/bannerGucci.png";
 import ProductList from "../ProductItem/ProductList";
 import Cart from "../Cart/Cart";
-import Search from "../Search/Search"; // Import Search component
-import FixedHeader from "./FixedHeader"; // Import FixedHeader component
+import Search from "../Search/Search";
+import FixedHeader from "./FixedHeader";
 
 function MyHeader() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [cart, setCart] = useState([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -126,12 +127,6 @@ function MyHeader() {
         return;
       }
 
-      console.log("Adding to cart with:", {
-        productId: parsedProductId,
-        quantity: 1,
-        size: selectedSize,
-      });
-
       const response = await fetch("http://localhost:8080/tirashop/cart/add", {
         method: "POST",
         headers: {
@@ -157,8 +152,6 @@ function MyHeader() {
       }
 
       const data = await response.json();
-      console.log("Response from add to cart:", data);
-
       if (data.status === "success") {
         await fetchCart();
         setIsSidebarOpen(true);
@@ -239,13 +232,6 @@ function MyHeader() {
         return;
       }
 
-      console.log("Updating cart with:", {
-        cartId: parsedCartId,
-        productId: parsedProductId,
-        quantity: newQuantity,
-        size,
-      });
-
       const response = await fetch(
         "http://localhost:8080/tirashop/cart/update",
         {
@@ -275,8 +261,6 @@ function MyHeader() {
       }
 
       const data = await response.json();
-      console.log("Response from update quantity:", data);
-
       if (data.status === "success") {
         await fetchCart();
         toast.success("Quantity updated!", {
@@ -384,58 +368,67 @@ function MyHeader() {
     setIsMenuOpen(false);
   };
 
+  const isHomepage = location.pathname === "/";
+
   return (
     <>
-      {/* Header ban đầu (transparent) */}
-      <header className={styles.header}>
-        <h1 className={styles.headerTitle} onClick={() => navigate("/")}>
-          TIRA
-        </h1>
-        <div className={styles.iconBox}>
-          {!isAuthenticated && (
-            <img
-              src={userIcon}
-              alt="User Icon"
-              className={styles.headerIcon}
-              onClick={() => navigate("/auth")}
-            />
-          )}
-          <div
-            className={styles.cartContainer}
-            onClick={() => setIsSidebarOpen(true)}
-          >
-            <img src={cartIcon} alt="Cart Icon" className={styles.headerIcon} />
-            {cart.length > 0 && (
-              <span className={styles.cartCount}>{cart.length}</span>
+      {isHomepage && (
+        <header className={styles.header}>
+          <h1 className={styles.headerTitle} onClick={() => navigate("/")}>
+            TIRA
+          </h1>
+          <div className={styles.iconBox}>
+            {!isAuthenticated && (
+              <img
+                src={userIcon}
+                alt="User Icon"
+                className={styles.headerIcon}
+                onClick={() => navigate("/auth")}
+              />
             )}
+            <div
+              className={styles.cartContainer}
+              onClick={() => setIsSidebarOpen(true)}
+            >
+              <img
+                src={cartIcon}
+                alt="Cart Icon"
+                className={styles.headerIcon}
+              />
+              {cart.length > 0 && (
+                <span className={styles.cartCount}>{cart.length}</span>
+              )}
+            </div>
+            <img
+              src={searchIcon}
+              alt="Search Icon"
+              className={styles.headerIcon}
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+            />
+            <Search
+              isSearchOpen={isSearchOpen}
+              setIsSearchOpen={setIsSearchOpen}
+            />
+            <img
+              src={barIcon}
+              alt="Menu Icon"
+              className={styles.headerIcon}
+              onClick={() => setIsMenuOpen(true)}
+            />
           </div>
-          <img
-            src={searchIcon}
-            alt="Search Icon"
-            className={styles.headerIcon}
-            onClick={() => setIsSearchOpen(!isSearchOpen)}
-          />
-          <Search
-            isSearchOpen={isSearchOpen}
-            setIsSearchOpen={setIsSearchOpen}
-          />
-          <img
-            src={barIcon}
-            alt="Menu Icon"
-            className={styles.headerIcon}
-            onClick={() => setIsMenuOpen(true)}
-          />
-        </div>
-      </header>
+        </header>
+      )}
 
-      {/* Sử dụng FixedHeader component */}
       <FixedHeader
         isAuthenticated={isAuthenticated}
         cart={cart}
         setIsSidebarOpen={setIsSidebarOpen}
-        setIsMenuOpen={setIsMenuOpen} // Truyền setIsMenuOpen để mở sidebar
+        isMenuOpen={isMenuOpen}
+        setIsMenuOpen={setIsMenuOpen}
         isSearchOpen={isSearchOpen}
         setIsSearchOpen={setIsSearchOpen}
+        isHomepage={isHomepage}
+        handleLogout={handleLogout}
       />
 
       <div className={styles.banner}>
@@ -514,10 +507,6 @@ function MyHeader() {
           <li>Contact Us</li>
         </ul>
       </div>
-      <ProductList
-        handleAddToCart={handleAddToCart}
-        isAuthenticated={isAuthenticated}
-      />
     </>
   );
 }

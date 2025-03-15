@@ -13,6 +13,7 @@ export const Container = styled.div`
   justify-content: center;
   align-items: center;
   border: 2px solid #b0bec5; // Bạc trầm
+  margin-top: 120px;
 `;
 
 export const SignUpContainer = styled.div`

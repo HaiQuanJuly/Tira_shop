@@ -1,5 +1,4 @@
-// src/context/AppContext.js
-import React, {
+import {
   createContext,
   useContext,
   useState,
@@ -18,9 +17,9 @@ export const AppProvider = ({ children }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isFetchingCart, setIsFetchingCart] = useState(false);
 
-  // Hàm fetchCart với memoization để tránh gọi lặp
+  // Hàm fetchCart với memoization
   const fetchCart = useCallback(async () => {
-    if (isFetchingCart) return; // Tránh gọi đồng thời
+    if (isFetchingCart || !isAuthenticated) return; // Tránh gọi khi đang fetch hoặc chưa đăng nhập
     setIsFetchingCart(true);
     try {
       const token = localStorage.getItem("token");
@@ -73,26 +72,25 @@ export const AppProvider = ({ children }) => {
     } finally {
       setIsFetchingCart(false);
     }
-  }, [isFetchingCart]); // Thêm isFetchingCart để kiểm soát
+  }, [isAuthenticated]); // Chỉ phụ thuộc vào isAuthenticated
 
   // Kiểm tra trạng thái đăng nhập khi khởi tạo
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      setIsAuthenticated(true);
-      fetchCart();
+      setIsAuthenticated(true); // fetchCart sẽ được gọi qua useEffect thứ hai
     } else {
       setIsAuthenticated(false);
       setCart([]);
     }
   }, []); // Chỉ chạy một lần khi khởi tạo
 
-  // Gọi fetchCart khi isAuthenticated thay đổi (tránh lặp vô hạn)
+  // Gọi fetchCart khi isAuthenticated thay đổi
   useEffect(() => {
-    if (isAuthenticated && !isFetchingCart) {
+    if (isAuthenticated) {
       fetchCart();
     }
-  }, [isAuthenticated, fetchCart]);
+  }, [isAuthenticated, fetchCart]); // fetchCart đã được memoized
 
   const handleLogout = () => {
     localStorage.removeItem("token");

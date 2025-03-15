@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import styles from "./styles.module.scss";
 import userIcon from "../../assets/icons/svgs/userIcon.svg";
@@ -22,34 +22,47 @@ function FixedHeader() {
     handleLogout,
   } = useAppContext();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [showBrandDropdown, setShowBrandDropdown] = useState(false);
 
+  // Xử lý trạng thái cuộn dựa trên đường dẫn
   useEffect(() => {
-    const handleScroll = () => {
+    // Reset isScrolled về false khi chuyển trang
+    setIsScrolled(false);
+
+    if (location.pathname === "/") {
+      // Logic cuộn chỉ áp dụng cho trang chủ
+      const handleScroll = () => {
+        setIsScrolled(window.scrollY > 100);
+      };
+      // Đặt trạng thái ban đầu dựa trên vị trí cuộn hiện tại
       setIsScrolled(window.scrollY > 100);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+      window.addEventListener("scroll", handleScroll);
+      return () => window.removeEventListener("scroll", handleScroll);
+    } else {
+      // Nếu không phải trang chủ, luôn hiển thị FixedHeader
+      setIsScrolled(true);
+    }
+  }, [location.pathname]); // Chạy lại effect khi pathname thay đổi
 
   const handleCartClick = () => {
-    console.log("Cart clicked, isAuthenticated:", isAuthenticated); // Debug
+    console.log("Cart clicked, isAuthenticated:", isAuthenticated);
     if (!isAuthenticated) {
       toast.error("Please log in to view your cart");
       navigate("/auth");
       return;
     }
-    setIsSidebarOpen(true); // Mở sidebar giỏ hàng
+    setIsSidebarOpen(true);
   };
 
   const handleUserClick = () => {
-    console.log("User Icon clicked"); // Debug
+    console.log("User Icon clicked");
     navigate("/auth");
   };
 
   const handleSignInClick = () => {
-    console.log("Sign In clicked"); // Debug
+    console.log("Sign In clicked");
     navigate("/auth");
   };
 
@@ -81,14 +94,23 @@ function FixedHeader() {
     setIsSearchOpen(!isSearchOpen);
   };
 
+  // Chỉ render FixedHeader khi isScrolled là true hoặc không phải trang chủ
+  if (location.pathname === "/" && !isScrolled) {
+    return null; // Ẩn FixedHeader khi ở trang chủ và chưa cuộn
+  }
+
   return (
     <>
       <header
-        className={`${styles.header} ${isScrolled ? styles.fixedHeader : ""}`}
+        className={`${styles.header} ${
+          isScrolled || location.pathname !== "/" ? styles.fixedHeader : ""
+        }`}
       >
         <h1
           className={`${styles.headerTitle} ${
-            isScrolled ? styles.showHeaderTitle : ""
+            isScrolled || location.pathname !== "/"
+              ? styles.showHeaderTitle
+              : ""
           }`}
           onClick={() => navigate("/")}
         >
@@ -96,7 +118,9 @@ function FixedHeader() {
         </h1>
 
         <div
-          className={`${styles.navMenu} ${isScrolled ? styles.showNav : ""}`}
+          className={`${styles.navMenu} ${
+            isScrolled || location.pathname !== "/" ? styles.showNav : ""
+          }`}
         >
           <div className={styles.navItem} onClick={navigateToBestProducts}>
             Best Product
@@ -147,7 +171,11 @@ function FixedHeader() {
           </div>
         </div>
 
-        <div className={`${styles.iconBox} ${isScrolled ? styles.flyUp : ""}`}>
+        <div
+          className={`${styles.iconBox} ${
+            isScrolled || location.pathname !== "/" ? styles.flyUp : ""
+          }`}
+        >
           {isAuthenticated ? (
             <span className={styles.headerIcon} onClick={handleLogout}></span>
           ) : (

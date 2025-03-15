@@ -19,6 +19,7 @@ import UserProfile from "./components/UserProfile/UserProfile";
 import FixedHeader from "./components/Header/FixedHeader";
 import Cart from "./components/Cart/Cart";
 import VoucherPage from "./components/Voucher/VoucherPage";
+import PostList from "./components/PostList/PostList";
 import "./assets/style/toastifyCustom.module.scss";
 
 // Protected Route Component để bảo vệ các route cần đăng nhập
@@ -83,6 +84,7 @@ function App() {
 
               {/* 404 Route */}
               <Route path="*" element={<Navigate to="/" />} />
+              <Route path="/news" element={<PostList />} />
             </Routes>
           </main>
         </div>

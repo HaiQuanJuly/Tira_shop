@@ -2,44 +2,80 @@
 
 :global {
   .Toastify__toast {
-    background: #fff !important; // Nền đen
-    color: #000 !important; // Chữ trắng
-    border: 1px solid #c8102e !important; // Viền vàng
+    background: #ffffff !important;
+    color: #333333 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    border: none !important;
     border-radius: 8px !important;
-    padding: 15px !important;
-    font-size: 1rem !important;
+    padding: 16px !important;
+    font-size: 0.95rem !important;
     font-weight: 500 !important;
+    margin-bottom: 12px !important;
   }
 
   .Toastify__toast--success {
-    background: #ffffff !important;
-    border-left: 5px solid #c8102e !important; // Viền trái vàng cho thông báo thành công
+    background: linear-gradient(to right, #c8102e 6px, #ffffff 6px) !important;
+    border-left: 6px solid #c8102e !important;
+  }
+
+  .Toastify__toast--info {
+    background: linear-gradient(to right, #0078d4 6px, #ffffff 6px) !important;
+    border-left: 6px solid #0078d4 !important;
+  }
+
+  .Toastify__toast--warning {
+    background: linear-gradient(to right, #ff9800 6px, #ffffff 6px) !important;
+    border-left: 6px solid #ff9800 !important;
   }
 
   .Toastify__toast--error {
-    background: #ffff !important;
-    border-left: 5px solid #c8102e !important; // Viền trái đỏ cho thông báo lỗi
+    background: linear-gradient(to right, #d32f2f 6px, #ffffff 6px) !important;
+    border-left: 6px solid #d32f2f !important;
   }
 
   .Toastify__toast-body {
     display: flex;
     align-items: center;
+    padding-left: 8px !important;
   }
 
   .Toastify__progress-bar {
-    background: #c8102e !important; // Thanh tiến trình vàng
+    height: 4px !important;
+    opacity: 0.8 !important;
+  }
+
+  .Toastify__progress-bar--success {
+    background: linear-gradient(to right, #c8102e, #ff6b6b) !important;
+  }
+
+  .Toastify__progress-bar--info {
+    background: linear-gradient(to right, #0078d4, #5bc0de) !important;
+  }
+
+  .Toastify__progress-bar--warning {
+    background: linear-gradient(to right, #ff9800, #ffcc80) !important;
+  }
+
+  .Toastify__progress-bar--error {
+    background: linear-gradient(to right, #d32f2f, #ff6b6b) !important;
   }
 
   .Toastify__close-button {
-    color: #fff !important;
+    color: #888888 !important;
     opacity: 0.7 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    align-self: flex-start !important;
 
     &:hover {
+      color: #333333 !important;
       opacity: 1 !important;
     }
   }
 
   .Toastify__toast-icon {
-    margin-right: 10px !important;
+    margin-right: 12px !important;
+    width: 22px !important;
+    height: 22px !important;
   }
 }
