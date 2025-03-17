@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import { FaTimes, FaPaperPlane, FaRegCommentDots } from "react-icons/fa";
 import styles from "./chatbot.module.scss";
-
 
 const API_URL = "https://4cd6-27-72-100-51.ngrok-free.app"; // Cập nhật API của bạn
 
@@ -24,7 +23,11 @@ const ChatBox = () => {
     setInput("");
 
     const updatedMessages = [
-      { role: "system", content: "Bạn là trợ lý ảo của Tira Shop. Hãy giúp khách hàng tìm sản phẩm hoặc tư vấn." },
+      {
+        role: "system",
+        content:
+          "Bạn là trợ lý ảo của Tira Shop. Hãy giúp khách hàng tìm sản phẩm hoặc tư vấn.",
+      },
       ...messages,
       userMessage,
     ];
@@ -38,11 +41,17 @@ const ChatBox = () => {
         body: JSON.stringify({ messages: updatedMessages }),
       });
       const data = await response.json();
-      const botMessage = { role: "assistant", content: data || "Xin lỗi, tôi không hiểu." };
+      const botMessage = {
+        role: "assistant",
+        content: data || "Xin lỗi, tôi không hiểu.",
+      };
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
       console.error("Lỗi API:", error);
-      setMessages((prev) => [...prev, { role: "assistant", content: "Lỗi kết nối. Vui lòng thử lại sau!" }]);
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: "Lỗi kết nối. Vui lòng thử lại sau!" },
+      ]);
     }
   };
 
@@ -53,23 +62,36 @@ const ChatBox = () => {
           <div className={styles.chatHeader}>
             <div></div>
             <h3>Tira-AI</h3>
-            <button onClick={() => setIsOpen(false)} className={styles.closeButton}>
+            <button
+              onClick={() => setIsOpen(false)}
+              className={styles.closeButton}
+            >
               <FaTimes />
             </button>
           </div>
 
           <div className={styles.chatMessages}>
             {messages.length === 0 ? (
-              <p className={styles.placeholderText}>Hello! Type your message...</p>
+              <p className={styles.placeholderText}>
+                Hello! Type your message...
+              </p>
             ) : (
               messages.map((msg, index) => (
                 <div
                   style={{
                     display: "flex",
-                    justifyContent: msg.role === "user" ? "flex-end" : "flex-start",
+                    justifyContent:
+                      msg.role === "user" ? "flex-end" : "flex-start",
                   }}
                 >
-                  <div key={index} className={msg.role === "user" ? styles.userMessage : styles.assistantMessage}>
+                  <div
+                    key={index}
+                    className={
+                      msg.role === "user"
+                        ? styles.userMessage
+                        : styles.assistantMessage
+                    }
+                  >
                     <span>
                       <ReactMarkdown>{msg.content}</ReactMarkdown>
                     </span>
@@ -85,7 +107,7 @@ const ChatBox = () => {
               type="text"
               placeholder="Type a message..."
               value={input}
-onChange={(e) => setInput(e.target.value)}
+              onChange={(e) => setInput(e.target.value)}
               className={styles.inputField}
               onKeyDown={(e) => e.key === "Enter" && sendMessage()}
             />
@@ -95,7 +117,10 @@ onChange={(e) => setInput(e.target.value)}
           </div>
         </div>
       )}
-      <button onClick={() => setIsOpen(!isOpen)} className={styles.toggleButton}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={styles.toggleButton}
+      >
         <FaRegCommentDots />
       </button>
     </div>
