@@ -9,6 +9,7 @@ import Cart from "../Cart/Cart";
 import { useAppContext } from "../../Context/AppContext";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+import heart from "../../assets/icons/images/heart.png";
 
 const responsiveMain = {
   desktop: { breakpoint: { max: 3000, min: 1024 }, items: 1 },
@@ -338,7 +339,7 @@ function ProductDetail() {
                 <h2>{product.name}</h2>
                 <p className={styles.brandCategory}>
                   <span className={styles.brand}>{product.brandName}</span>
-                  <span className={styles.divider}>|</span>
+                  <span className={styles.divider}></span>
                   <span className={styles.category}>
                     {product.categoryName}
                   </span>
@@ -425,7 +426,13 @@ function ProductDetail() {
                   </button>
                 )}
 
-                <button className={styles.wishlistBtn}>Add to Wishlist</button>
+                <button className={styles.wishlistBtn}>
+                  <img
+                    src={heart}
+                    alt="Wishlist"
+                    className={styles.heartIcon}
+                  />
+                </button>
               </div>
             </div>
           </div>
