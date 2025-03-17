@@ -28,7 +28,7 @@ function ProductDetail() {
   const {
     isAuthenticated,
     setIsAuthenticated,
-    isSidebarOpen,
+    // isSidebarOpen,
     setIsSidebarOpen,
     fetchCart,
   } = useAppContext();
@@ -226,7 +226,7 @@ function ProductDetail() {
       <div className={styles.errorContainer}>
         <div className={styles.errorIcon}>?</div>
         <h3>Product Not Found</h3>
-        <p>We couldn't find the product you're looking for.</p>
+        <p>We couldn`t find the product you`re looking for.</p>
         <button
           className={styles.retryBtn}
           onClick={() => navigate("/products")}

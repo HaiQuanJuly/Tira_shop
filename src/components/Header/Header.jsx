@@ -8,7 +8,7 @@ import searchIcon from "../../assets/icons/svgs/searchIcon.svg";
 import barIcon from "../../assets/icons/svgs/bar.svg";
 import closeIcon from "../../assets/icons/svgs/close.svg";
 import bannerGucci from "../../assets/icons/images/bannerGucci.png";
-import ProductList from "../ProductItem/ProductList";
+// import ProductList from "../ProductItem/ProductList"
 import Cart from "../Cart/Cart";
 import Search from "../Search/Search";
 import FixedHeader from "./FixedHeader";
@@ -83,96 +83,6 @@ function MyHeader() {
     } catch (error) {
       console.error("Error fetching cart:", error);
       setCart([]);
-    }
-  };
-
-  const handleAddToCart = async (product, selectedSize) => {
-    if (!isAuthenticated) {
-      toast.error("Please log in to add items to cart", {
-        position: "top-right",
-        autoClose: 3000,
-      });
-      navigate("/auth");
-      return;
-    }
-
-    setIsAdding(true);
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setIsAuthenticated(false);
-        toast.error("Please log in to add items to cart", {
-          position: "top-right",
-          autoClose: 3000,
-        });
-        navigate("/auth");
-        return;
-      }
-
-      const validSizes = ["S", "M", "L"];
-      if (!validSizes.includes(selectedSize)) {
-        toast.error("Invalid size. Please select S, M, or L.", {
-          position: "top-right",
-          autoClose: 3000,
-        });
-        return;
-      }
-
-      const parsedProductId = parseInt(product.id);
-      if (isNaN(parsedProductId)) {
-        toast.error("Invalid product ID", {
-          position: "top-right",
-          autoClose: 3000,
-        });
-        return;
-      }
-
-      const response = await fetch("http://localhost:8080/tirashop/cart/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          productId: parsedProductId,
-          quantity: 1,
-          size: selectedSize,
-        }),
-      });
-
-      if (response.status === 401) {
-        localStorage.removeItem("token");
-        setIsAuthenticated(false);
-        toast.error("Your session has expired. Please log in again.", {
-          position: "top-right",
-          autoClose: 3000,
-        });
-        navigate("/auth");
-        return;
-      }
-
-      const data = await response.json();
-      if (data.status === "success") {
-        await fetchCart();
-        setIsSidebarOpen(true);
-        toast.success("Product added to cart!", {
-          position: "top-right",
-          autoClose: 3000,
-        });
-      } else {
-        toast.error(`Failed to add to cart: ${data.message}`, {
-          position: "top-right",
-          autoClose: 3000,
-        });
-      }
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-      toast.error("Error adding to cart. Please try again.", {
-        position: "top-right",
-        autoClose: 3000,
-      });
-    } finally {
-      setIsAdding(false);
     }
   };
 
