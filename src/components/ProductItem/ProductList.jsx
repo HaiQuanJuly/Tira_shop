@@ -1,3 +1,4 @@
+// ProductList.js
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -5,7 +6,7 @@ import styles from "./styles.module.scss";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { useAppContext } from "../../Context/AppContext";
-import React from "react"; // Thêm React để sử dụng React.memo
+import React from "react";
 
 const responsive = {
   superLargeDesktop: { breakpoint: { max: 4000, min: 3000 }, items: 5 },
@@ -14,20 +15,26 @@ const responsive = {
   mobile: { breakpoint: { max: 464, min: 0 }, items: 1 },
 };
 
-function ProductList({ isAuthenticated }) {
+function ProductList({ isAuthenticated, categoryId }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedSizes, setSelectedSizes] = useState({});
   const navigate = useNavigate();
-  const { fetchCart, setIsSidebarOpen } = useAppContext();
+  const { fetchCart, setIsSidebarOpen, selectedCategory } = useAppContext();
 
-  // Memoize fetchProducts để tránh gọi lại không cần thiết
   const fetchProducts = useCallback(async () => {
     console.log("Fetching products...");
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:8080/tirashop/product", {
+      // Sử dụng categoryId từ prop nếu có, nếu không thì dùng selectedCategory từ context
+      const url = categoryId
+        ? `http://localhost:8080/tirashop/product?categoryId=${categoryId}`
+        : selectedCategory
+        ? `http://localhost:8080/tirashop/product?categoryId=${selectedCategory.id}`
+        : "http://localhost:8080/tirashop/product";
+
+      const response = await fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -53,15 +60,15 @@ function ProductList({ isAuthenticated }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [categoryId, selectedCategory]);
 
-  // Chỉ gọi fetchProducts một lần khi component mount
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
 
   const handleProductClick = useCallback(
     (productId) => {
+      // Nếu người dùng chưa đăng nhập, vẫn cho phép xem chi tiết sản phẩm
       navigate(`/product/${productId}`);
     },
     [navigate]
@@ -118,7 +125,6 @@ function ProductList({ isAuthenticated }) {
     [isAuthenticated, navigate, fetchCart, setIsSidebarOpen, selectedSizes]
   );
 
-  // Memoize danh sách sản phẩm để tránh re-render không cần thiết trong Carousel
   const memoizedProducts = useMemo(() => products, [products]);
 
   if (loading) return <p>Loading products...</p>;
@@ -173,21 +179,12 @@ function ProductList({ isAuthenticated }) {
                   <option value="L">L</option>
                 </select>
               </div>
-              {isAuthenticated ? (
-                <button
-                  onClick={() => handleAddToCart(product)}
-                  className={styles.addToCartBtn}
-                >
-                  Add to Cart
-                </button>
-              ) : (
-                <button
-                  onClick={() => navigate("/auth")}
-                  className={styles.addToCartBtn}
-                >
-                  Sign In to Add
-                </button>
-              )}
+              <button
+                onClick={() => handleAddToCart(product)}
+                className={styles.addToCartBtn}
+              >
+                Add to Cart
+              </button>
             </div>
           ))}
         </Carousel>
@@ -199,7 +196,9 @@ function ProductList({ isAuthenticated }) {
   );
 }
 
-// Memoize component để tránh re-render không cần thiết khi props không thay đổi
 export default React.memo(ProductList, (prevProps, nextProps) => {
-  return prevProps.isAuthenticated === nextProps.isAuthenticated;
+  return (
+    prevProps.isAuthenticated === nextProps.isAuthenticated &&
+    prevProps.categoryId === nextProps.categoryId
+  );
 });

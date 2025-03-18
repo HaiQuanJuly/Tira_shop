@@ -1,3 +1,4 @@
+// App.jsx
 import {
   BrowserRouter as Router,
   Routes,
@@ -22,6 +23,7 @@ import Cart from "./components/Cart/Cart";
 import VoucherPage from "./components/Voucher/VoucherPage";
 import PostList from "./components/PostList/PostList";
 import DetailPostList from "./components/PostList/DetailPostList";
+import CategoryPage from "./components/CategoryPage/CategoryPage";
 import "./assets/style/toastifyCustom.module.scss";
 
 const ProtectedRoute = ({ children }) => {
@@ -45,6 +47,10 @@ function App() {
               <Route path="/verify-code" element={<VerifyCodePage />} />
               <Route path="/set-new-password" element={<SetNewPasswordPage />} />
 
+              <Route
+                path="/set-new-password"
+                element={<SetNewPasswordPage />}
+              />
               <Route
                 path="/checkout"
                 element={
@@ -93,6 +99,8 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route path="/category/:categoryId" element={<CategoryPage />} />{" "}
+              {/* Bỏ ProtectedRoute */}
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </main>
