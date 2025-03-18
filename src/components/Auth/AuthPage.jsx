@@ -6,7 +6,7 @@ import { FaGoogle, FaFacebookF } from "react-icons/fa";
 import { useAppContext } from "../../context/AppContext";
 
 function AuthPage() {
-  const { setIsAuthenticated } = useAppContext(); // Lấy setIsAuthenticated từ context
+  const { setIsAuthenticated } = useAppContext();
   const [signIn, setSignIn] = useState(true);
   const [formData, setFormData] = useState({
     username: "",
@@ -23,14 +23,13 @@ function AuthPage() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Kiểm tra token khi component được mount
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
     if (token && userId) {
       validateToken(token).then((isValid) => {
         if (isValid) {
-          setIsAuthenticated(true); // Cập nhật trạng thái xác thực
+          setIsAuthenticated(true);
           toast.info("You are already logged in", {
             position: "top-right",
             autoClose: 3000,
@@ -46,7 +45,6 @@ function AuthPage() {
     }
   }, [navigate, setIsAuthenticated]);
 
-  // Hàm xác thực token bằng cách gọi API
   const validateToken = async (token) => {
     try {
       const response = await fetch(
@@ -67,18 +65,15 @@ function AuthPage() {
     }
   };
 
-  // Xử lý thay đổi input
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Xử lý đăng nhập/đăng ký
   const handleAuth = async (e) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
 
-    // Kiểm tra form trước khi gửi
     if (signIn) {
       if (!formData.username || !formData.password) {
         setError("Please fill in all required fields.");
@@ -145,7 +140,7 @@ function AuthPage() {
             localStorage.setItem("token", data.data.token);
             localStorage.setItem("userId", data.data.userId || "unknown");
             localStorage.setItem("username", formData.username);
-            setIsAuthenticated(true); // Cập nhật trạng thái xác thực
+            setIsAuthenticated(true);
             toast.success("Login successful!", {
               position: "top-right",
               autoClose: 3000,
@@ -168,7 +163,7 @@ function AuthPage() {
               autoClose: 3000,
             }
           );
-          setSignIn(true); // Chuyển sang form đăng nhập
+          setSignIn(true);
           setFormData({
             username: "",
             password: "",

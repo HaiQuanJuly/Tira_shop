@@ -19,7 +19,7 @@ import FixedHeader from "./components/Header/FixedHeader";
 import Cart from "./components/Cart/Cart";
 import VoucherPage from "./components/Voucher/VoucherPage";
 import PostList from "./components/PostList/PostList";
-import DetailPostList from "./components/PostList/DetailPostList"; // Thêm import
+import DetailPostList from "./components/PostList/DetailPostList";
 import "./assets/style/toastifyCustom.module.scss";
 
 const ProtectedRoute = ({ children }) => {

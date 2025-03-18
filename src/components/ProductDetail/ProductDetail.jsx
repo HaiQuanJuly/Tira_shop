@@ -26,13 +26,8 @@ const responsiveThumbnails = {
 function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const {
-    isAuthenticated,
-    setIsAuthenticated,
-    // isSidebarOpen,
-    setIsSidebarOpen,
-    fetchCart,
-  } = useAppContext();
+  const { isAuthenticated, setIsAuthenticated, setIsSidebarOpen, fetchCart } =
+    useAppContext();
   const [product, setProduct] = useState(null);
   const [imageUrls, setImageUrls] = useState([]);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -44,8 +39,7 @@ function ProductDetail() {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) {
+        if (!isAuthenticated) {
           toast.error("Please log in to view product details", {
             position: "top-right",
             autoClose: 3000,
@@ -54,6 +48,7 @@ function ProductDetail() {
           return;
         }
 
+        const token = localStorage.getItem("token");
         const productResponse = await fetch(
           `http://localhost:8080/tirashop/product/get/${id}`,
           {
@@ -102,7 +97,7 @@ function ProductDetail() {
       }
     };
     fetchProduct();
-  }, [id, navigate]);
+  }, [id, navigate, isAuthenticated]); // Thêm isAuthenticated vào dependencies
 
   const handleAddToCart = async () => {
     if (!isAuthenticated) {
