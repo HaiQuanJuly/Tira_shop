@@ -3,7 +3,7 @@ import ReactMarkdown from "react-markdown";
 import { FaTimes, FaPaperPlane, FaRegCommentDots } from "react-icons/fa";
 import styles from "./chatbot.module.scss";
 
-const API_URL = "https://4cd6-27-72-100-51.ngrok-free.app"; // Cập nhật API của bạn
+const API_URL = "https://4e19-202-93-156-66.ngrok-free.app/"; // Cập nhật API của bạn
 
 const ChatBox = () => {
   const [isOpen, setIsOpen] = useState(false);
