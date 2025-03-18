@@ -1,23 +1,55 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import { FaTimes, FaPaperPlane, FaRegCommentDots } from "react-icons/fa";
+import { IoMdSend } from "react-icons/io";
+import { BsRobot } from "react-icons/bs";
+import { FiX } from "react-icons/fi";
 import styles from "./chatbot.module.scss";
-import { useAppContext } from "../../context/AppContext"; // Import AppContext
+import { useAppContext } from "../../context/AppContext";
 
-const API_URL = "https://4e19-202-93-156-66.ngrok-free.app"; // Cập nhật API của bạn
+const API_URL = "https://4e19-202-93-156-66.ngrok-free.app";
 
 const ChatBox = () => {
-  const { isAuthenticated } = useAppContext(); // Lấy trạng thái đăng nhập
-  const navigate = useNavigate(); // Thêm useNavigate
+  const { isAuthenticated } = useAppContext();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
 
+  // Initial welcome message
+  useEffect(() => {
+    if (messages.length === 0 && isOpen) {
+      setIsTyping(true);
+      setTimeout(() => {
+        setMessages([
+          {
+            role: "assistant",
+            content:
+              "Hello! I'm Tira's virtual assistant. How can I help you today?",
+          },
+        ]);
+        setIsTyping(false);
+      }, 1000);
+    }
+  }, [isOpen, messages.length]);
+
+  // Auto-scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Focus input when chat opens
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 300);
+    }
+  }, [isOpen]);
 
   const handleLinkClick = (productId) => {
     if (!isAuthenticated) {
@@ -25,6 +57,7 @@ const ChatBox = () => {
       return;
     }
     navigate(`/product/${productId}`);
+    setIsOpen(false);
   };
 
   const sendMessage = async () => {
@@ -33,6 +66,7 @@ const ChatBox = () => {
     const userMessage = { role: "user", content: input };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
+    setIsTyping(true);
 
     const updatedMessages = [
       {
@@ -62,7 +96,7 @@ const ChatBox = () => {
             "Please log in to view product details. You can log in [here](/auth).",
         };
       } else {
-        // Thay thế các liên kết bằng văn bản có thể nhấp
+        // Replace links with clickable text
         const contentWithLinks = data.replace(
           /http:\/\/localhost:5173\/product\/(\d+)/g,
           (match, productId) => {
@@ -74,16 +108,31 @@ const ChatBox = () => {
           content: contentWithLinks,
         };
       }
-      setMessages((prev) => [...prev, botMessage]);
+
+      // Simulate natural response time
+      setTimeout(() => {
+        setMessages((prev) => [...prev, botMessage]);
+        setIsTyping(false);
+      }, Math.random() * 1000 + 500);
     } catch (error) {
-      console.error("Lỗi API:", error);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: "Connection error. Please try again later!",
-        },
-      ]);
+      console.error("API Error:", error);
+      setTimeout(() => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: "Connection error. Please try again later!",
+          },
+        ]);
+        setIsTyping(false);
+      }, 500);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
     }
   };
 
@@ -92,66 +141,78 @@ const ChatBox = () => {
       {isOpen && (
         <div className={styles.chatBox}>
           <div className={styles.chatHeader}>
-            <div></div>
-            <h3>Tira-AI</h3>
+            <h3>Tira Assistant</h3>
             <button
               onClick={() => setIsOpen(false)}
               className={styles.closeButton}
+              aria-label="Close chat"
             >
-              <FaTimes />
+              <FiX />
             </button>
           </div>
 
           <div className={styles.chatMessages}>
             {messages.length === 0 ? (
               <p className={styles.placeholderText}>
-                Hello! Type your message...
+                Starting a new conversation...
               </p>
             ) : (
               messages.map((msg, index) => (
                 <div
+                  key={index}
+                  className={styles.messageRow}
                   style={{
-                    display: "flex",
                     justifyContent:
                       msg.role === "user" ? "flex-end" : "flex-start",
                   }}
                 >
                   <div
-                    key={index}
                     className={
                       msg.role === "user"
                         ? styles.userMessage
                         : styles.assistantMessage
                     }
                   >
-                    <span>
-                      <ReactMarkdown
-                        components={{
-                          a: ({ href, children }) => {
-                            if (href.startsWith("#product-")) {
-                              const productId = href.replace("#product-", "");
-                              return (
-                                <a
-                                  href="#"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    handleLinkClick(productId);
-                                  }}
-                                >
-                                  {children}
-                                </a>
-                              );
-                            }
-                            return <a href={href}>{children}</a>;
-                          },
-                        }}
-                      >
-                        {msg.content}
-                      </ReactMarkdown>
-                    </span>
+                    <ReactMarkdown
+                      components={{
+                        a: ({ href, children }) => {
+                          if (href && href.startsWith("#product-")) {
+                            const productId = href.replace("#product-", "");
+                            return (
+                              <a
+                                href="#"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleLinkClick(productId);
+                                }}
+                              >
+                                {children}
+                              </a>
+                            );
+                          }
+                          return <a href={href}>{children}</a>;
+                        },
+                      }}
+                    >
+                      {msg.content}
+                    </ReactMarkdown>
                   </div>
                 </div>
               ))
+            )}
+            {isTyping && (
+              <div
+                className={styles.messageRow}
+                style={{ justifyContent: "flex-start" }}
+              >
+                <div className={styles.assistantMessage}>
+                  <div className={styles.typingIndicator}>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                </div>
+              </div>
             )}
             <div ref={messagesEndRef} />
           </div>
@@ -159,14 +220,21 @@ const ChatBox = () => {
           <div className={styles.inputContainer}>
             <input
               type="text"
-              placeholder="Type a message..."
+              placeholder="Type your message..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
               className={styles.inputField}
-              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+              ref={inputRef}
+              disabled={isTyping}
             />
-            <button onClick={sendMessage} className={styles.sendButton}>
-              <FaPaperPlane />
+            <button
+              onClick={sendMessage}
+              className={styles.sendButton}
+              disabled={!input.trim() || isTyping}
+              aria-label="Send message"
+            >
+              <IoMdSend />
             </button>
           </div>
         </div>
@@ -174,6 +242,7 @@ const ChatBox = () => {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={styles.toggleButton}
+        aria-label={isOpen ? "Close chat" : "Open chat"}
       >
         <FaRegCommentDots />
       </button>

@@ -1,3 +1,4 @@
+// AppContext.js
 import {
   createContext,
   useContext,
@@ -16,10 +17,10 @@ export const AppProvider = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isFetchingCart, setIsFetchingCart] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null); // Thêm trạng thái danh mục
 
-  // Hàm fetchCart với memoization
   const fetchCart = useCallback(async () => {
-    if (isFetchingCart || !isAuthenticated) return; // Tránh gọi khi đang fetch hoặc chưa đăng nhập
+    if (isFetchingCart || !isAuthenticated) return;
     setIsFetchingCart(true);
     try {
       const token = localStorage.getItem("token");
@@ -46,7 +47,6 @@ export const AppProvider = ({ children }) => {
       }
 
       const data = await response.json();
-      console.log("Fetch cart response:", data); // Debug
       if (data.status === "success" && data.data && data.data.items) {
         const validSizes = ["S", "M", "L"];
         const parsedCart = data.data.items.map((item) => ({
@@ -72,14 +72,12 @@ export const AppProvider = ({ children }) => {
     } finally {
       setIsFetchingCart(false);
     }
-  }, [isAuthenticated]); // Chỉ phụ thuộc vào isAuthenticated
+  }, [isAuthenticated]);
 
-  // Kiểm tra và xác thực token khi khởi tạo
   useEffect(() => {
     const validateAndSetAuth = async () => {
       const token = localStorage.getItem("token");
       if (token) {
-        // Gọi API để xác thực token
         try {
           const response = await fetch(
             "http://localhost:8080/tirashop/auth/validate-token",
@@ -114,12 +112,11 @@ export const AppProvider = ({ children }) => {
     validateAndSetAuth();
   }, []);
 
-  // Gọi fetchCart khi isAuthenticated thay đổi
   useEffect(() => {
     if (isAuthenticated) {
       fetchCart();
     }
-  }, [isAuthenticated, fetchCart]); // fetchCart đã được memoized
+  }, [isAuthenticated, fetchCart]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -145,6 +142,8 @@ export const AppProvider = ({ children }) => {
         setIsSearchOpen,
         fetchCart,
         handleLogout,
+        selectedCategory, // Thêm vào context
+        setSelectedCategory, // Thêm vào context
       }}
     >
       {children}

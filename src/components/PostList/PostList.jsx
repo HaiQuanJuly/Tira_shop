@@ -149,7 +149,6 @@ function PostList() {
           </div>
         )}
       </div>
-      <Footer></Footer>
     </>
   );
 }
