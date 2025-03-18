@@ -5,11 +5,7 @@ import { FaTimes, FaPaperPlane, FaRegCommentDots } from "react-icons/fa";
 import styles from "./chatbot.module.scss";
 import { useAppContext } from "../../context/AppContext"; // Import AppContext
 
-<<<<<<< HEAD
-const API_URL = "https://4e19-202-93-156-66.ngrok-free.app/"; // Cập nhật API của bạn
-=======
-const API_URL = "https://4e19-202-93-156-66.ngrok-free.app"; // Cập nhật API của bạn
->>>>>>> 0d2fb6e7341ccd1c6f1da5ce514d34d42a9c9072
+const API_URL = "https://790a-118-70-118-224.ngrok-free.app/"; // Cập nhật API của bạn
 
 const ChatBox = () => {
   const { isAuthenticated } = useAppContext(); // Lấy trạng thái đăng nhập

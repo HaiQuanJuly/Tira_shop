@@ -4,6 +4,8 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+
+import ChatBox from "./components/HomePage/ChatBox";  // Import ChatBox
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AppProvider, useAppContext } from "./context/AppContext";
@@ -41,10 +43,7 @@ function App() {
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
               <Route path="/verify-code" element={<VerifyCodePage />} />
-              <Route
-                path="/set-new-password"
-                element={<SetNewPasswordPage />}
-              />
+              <Route path="/set-new-password" element={<SetNewPasswordPage />} />
 
               <Route
                 path="/checkout"
@@ -94,10 +93,10 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </main>
+          <ChatBox /> {/* Thêm ChatBox vào đây */}
         </div>
         <ToastContainer
           position="top-right"
@@ -118,3 +117,5 @@ function App() {
 }
 
 export default App;
+
+
