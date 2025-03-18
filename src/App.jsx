@@ -1,4 +1,3 @@
-// src/App.jsx
 import {
   BrowserRouter as Router,
   Routes,
@@ -20,12 +19,12 @@ import FixedHeader from "./components/Header/FixedHeader";
 import Cart from "./components/Cart/Cart";
 import VoucherPage from "./components/Voucher/VoucherPage";
 import PostList from "./components/PostList/PostList";
+import DetailPostList from "./components/PostList/DetailPostList";
 import "./assets/style/toastifyCustom.module.scss";
 
-// Protected Route Component để bảo vệ các route cần đăng nhập
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useAppContext();
-  console.log("isAuthenticated in ProtectedRoute:", isAuthenticated); // Debug
+  console.log("isAuthenticated in ProtectedRoute:", isAuthenticated);
   return isAuthenticated ? children : <Navigate to="/auth" />;
 };
 
@@ -38,7 +37,6 @@ function App() {
           <Cart />
           <main>
             <Routes>
-              {/* Public Routes */}
               <Route path="/" element={<HomePage />} />
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -48,7 +46,6 @@ function App() {
                 element={<SetNewPasswordPage />}
               />
 
-              {/* Protected Routes */}
               <Route
                 path="/checkout"
                 element={
@@ -81,10 +78,24 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/news"
+                element={
+                  <ProtectedRoute>
+                    <PostList />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/post/:postId"
+                element={
+                  <ProtectedRoute>
+                    <DetailPostList />
+                  </ProtectedRoute>
+                }
+              />
 
-              {/* 404 Route */}
               <Route path="*" element={<Navigate to="/" />} />
-              <Route path="/news" element={<PostList />} />
             </Routes>
           </main>
         </div>

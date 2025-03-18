@@ -74,16 +74,45 @@ export const AppProvider = ({ children }) => {
     }
   }, [isAuthenticated]); // Chỉ phụ thuộc vào isAuthenticated
 
-  // Kiểm tra trạng thái đăng nhập khi khởi tạo
+  // Kiểm tra và xác thực token khi khởi tạo
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsAuthenticated(true); // fetchCart sẽ được gọi qua useEffect thứ hai
-    } else {
-      setIsAuthenticated(false);
-      setCart([]);
-    }
-  }, []); // Chỉ chạy một lần khi khởi tạo
+    const validateAndSetAuth = async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        // Gọi API để xác thực token
+        try {
+          const response = await fetch(
+            "http://localhost:8080/tirashop/auth/validate-token",
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.status === 200 && data.status === "success") {
+            setIsAuthenticated(true);
+          } else {
+            localStorage.removeItem("token");
+            setIsAuthenticated(false);
+            setCart([]);
+            toast.error("Your session has expired. Please log in again.");
+          }
+        } catch (err) {
+          console.error("Token validation error:", err);
+          localStorage.removeItem("token");
+          setIsAuthenticated(false);
+          setCart([]);
+        }
+      } else {
+        setIsAuthenticated(false);
+        setCart([]);
+      }
+    };
+    validateAndSetAuth();
+  }, []);
 
   // Gọi fetchCart khi isAuthenticated thay đổi
   useEffect(() => {
