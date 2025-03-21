@@ -59,6 +59,7 @@
     padding: 20px; /* Giảm padding để layout gọn hơn */
     border: none;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+    position: relative;
 
     &:hover {
       transform: translateY(-10px);
@@ -71,7 +72,30 @@
       border-radius: 10px;
       position: relative;
       background: #fafafa;
+      height: 300px; /* Tăng chiều cao cố định để hình ảnh có nhiều không gian */
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
+      /* Thêm gradient mờ để làm nổi bật hình ảnh */
+      &:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 40px;
+        background: linear-gradient(
+          to bottom,
+          rgba(250, 250, 250, 0.8),
+          rgba(250, 250, 250, 0)
+        );
+        z-index: 1;
+        opacity: 0.7;
+        pointer-events: none;
+      }
+
+      /* Hiệu ứng khi hover */
       &:after {
         content: "";
         position: absolute;
@@ -79,7 +103,11 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(255, 255, 255, 0.1);
+        background: linear-gradient(
+          45deg,
+          rgba(203, 5, 0, 0.03) 0%,
+          rgba(255, 255, 255, 0.1) 100%
+        );
         opacity: 0;
         transition: opacity 0.3s ease;
       }
@@ -89,13 +117,21 @@
       }
 
       img {
-        width: 100%;
-        height: 280px; /* Giảm chiều cao ảnh để vừa layout */
-        object-fit: cover;
-        transition: transform 0.6s ease;
+        width: 90%; /* Giảm kích thước hình ảnh xuống 90% để có khoảng trắng xung quanh */
+        height: 90%; /* Giảm chiều cao để có khoảng trắng */
+        object-fit: contain; /* Đảm bảo hình ảnh hiển thị đầy đủ không bị cắt */
+        transition: transform 0.6s ease, filter 0.3s ease;
+        object-position: center;
+        border-radius: 6px; /* Bo tròn nhẹ cho hình ảnh */
+        filter: drop-shadow(
+          0 4px 12px rgba(0, 0, 0, 0.05)
+        ); /* Thêm đổ bóng nhẹ */
 
         &:hover {
-          transform: scale(1.08);
+          transform: scale(
+            1.05
+          ); /* Giảm mức độ zoom khi hover để hiệu ứng tinh tế hơn */
+          filter: drop-shadow(0 8px 15px rgba(0, 0, 0, 0.1));
         }
       }
     }
@@ -279,8 +315,8 @@
     margin: 8px;
     padding: 12px;
 
-    .boxImg img {
-      height: 220px; /* Giảm chiều cao ảnh */
+    .boxImg {
+      height: 240px; /* Điều chỉnh chiều cao phù hợp cho mobile */
     }
 
     .title {
@@ -312,6 +348,7 @@
     }
   }
 }
+
 .loadingContainer,
 .errorContainer {
   text-align: center;

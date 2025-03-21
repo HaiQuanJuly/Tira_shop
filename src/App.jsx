@@ -5,8 +5,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import { useState } from "react"; // Import useState
-
+import { useState } from "react";
 import ChatBox from "./components/HomePage/ChatBox";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -25,8 +24,8 @@ import VoucherPage from "./components/Voucher/VoucherPage";
 import PostList from "./components/PostList/PostList";
 import DetailPostList from "./components/PostList/DetailPostList";
 import CategoryPage from "./components/CategoryPage/CategoryPage";
-import TryOn from "./components/HomePage/TryOn"; // Import TryOn
-import TryOnButton from "./components/HomePage/TryonButton"; // Import TryOnButton
+import TryOn from "./components/HomePage/TryOn";
+import TryOnButton from "./components/HomePage/TryonButton";
 import "./assets/style/toastifyCustom.module.scss";
 
 const ProtectedRoute = ({ children }) => {
@@ -36,10 +35,7 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function App() {
-  // Add state for TryOn modal
   const [isTryOnOpen, setIsTryOnOpen] = useState(false);
-
-  // Functions to handle TryOn modal
   const openTryOn = () => setIsTryOnOpen(true);
   const closeTryOn = () => setIsTryOnOpen(false);
 
@@ -108,12 +104,11 @@ function App() {
                 }
               />
               <Route path="/category/:categoryId" element={<CategoryPage />} />
+              <Route path="/category/all" element={<CategoryPage />} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </main>
           <ChatBox />
-
-          {/* Add TryOnButton and TryOn modal */}
           <TryOnButton onClick={openTryOn} />
           <TryOn isOpen={isTryOnOpen} onClose={closeTryOn} />
         </div>

@@ -27,7 +27,6 @@ function ProductList({ isAuthenticated, categoryId }) {
     console.log("Fetching products...");
     setLoading(true);
     try {
-      // Sử dụng categoryId từ prop nếu có, nếu không thì dùng selectedCategory từ context
       const url = categoryId
         ? `http://localhost:8080/tirashop/product?categoryId=${categoryId}`
         : selectedCategory
@@ -68,7 +67,6 @@ function ProductList({ isAuthenticated, categoryId }) {
 
   const handleProductClick = useCallback(
     (productId) => {
-      // Nếu người dùng chưa đăng nhập, vẫn cho phép xem chi tiết sản phẩm
       navigate(`/product/${productId}`);
     },
     [navigate]
@@ -125,7 +123,17 @@ function ProductList({ isAuthenticated, categoryId }) {
     [isAuthenticated, navigate, fetchCart, setIsSidebarOpen, selectedSizes]
   );
 
-  const memoizedProducts = useMemo(() => products, [products]);
+  const memoizedProducts = useMemo(() => products.slice(0, 7), [products]);
+
+  const handleSeeMore = useCallback(() => {
+    const targetCategoryId =
+      categoryId || (selectedCategory && selectedCategory.id);
+    if (targetCategoryId) {
+      navigate(`/category/${targetCategoryId}`);
+    } else {
+      navigate("/category/all");
+    }
+  }, [categoryId, selectedCategory, navigate]);
 
   if (loading) return <p>Loading products...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -190,7 +198,9 @@ function ProductList({ isAuthenticated, categoryId }) {
         </Carousel>
       </div>
       <div className={styles.buttonContainer}>
-        <button className={styles.button}>See More Products</button>
+        <button className={styles.button} onClick={handleSeeMore}>
+          See More Products
+        </button>
       </div>
     </div>
   );
