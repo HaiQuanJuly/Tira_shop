@@ -8,7 +8,7 @@ import { FiX } from "react-icons/fi";
 import styles from "./chatbot.module.scss";
 import { useAppContext } from "../../context/AppContext";
 
-const API_URL = "https://2882-202-93-156-66.ngrok-free.app/"; // Cập nhật API của bạn
+const API_URL = "http://localhost:8000/"; // Cập nhật API của bạn
 
 
 const ChatBox = () => {
@@ -88,7 +88,7 @@ const ChatBox = () => {
         body: JSON.stringify({ messages: updatedMessages }),
       });
       const data = await response.json();
-
+      console.log(data)
       let botMessage;
       if (!isAuthenticated) {
         botMessage = {
