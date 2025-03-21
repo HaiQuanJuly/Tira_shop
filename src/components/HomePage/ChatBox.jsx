@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
-import { FaTimes, FaPaperPlane, FaRegCommentDots } from "react-icons/fa";
+import { FaRegCommentDots } from "react-icons/fa";
 import { IoMdSend } from "react-icons/io";
-import { BsRobot } from "react-icons/bs";
 import { FiX } from "react-icons/fi";
 import styles from "./chatbot.module.scss";
 import { useAppContext } from "../../context/AppContext";
@@ -88,7 +87,11 @@ const ChatBox = () => {
         body: JSON.stringify({ messages: updatedMessages }),
       });
       const data = await response.json();
+<<<<<<< HEAD
       console.log(data)
+=======
+      console.log(data);
+>>>>>>> cb30de79ba6805be1d803ebd83846d7b9de596a5
       let botMessage;
       if (!isAuthenticated) {
         botMessage = {

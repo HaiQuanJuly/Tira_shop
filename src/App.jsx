@@ -5,8 +5,8 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-
-import ChatBox from "./components/HomePage/ChatBox";  // Import ChatBox
+import { useState } from "react";
+import ChatBox from "./components/HomePage/ChatBox";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AppProvider, useAppContext } from "./context/AppContext";
@@ -24,6 +24,8 @@ import VoucherPage from "./components/Voucher/VoucherPage";
 import PostList from "./components/PostList/PostList";
 import DetailPostList from "./components/PostList/DetailPostList";
 import CategoryPage from "./components/CategoryPage/CategoryPage";
+import TryOn from "./components/HomePage/TryOn";
+import TryOnButton from "./components/HomePage/TryonButton";
 import "./assets/style/toastifyCustom.module.scss";
 
 const ProtectedRoute = ({ children }) => {
@@ -33,6 +35,10 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function App() {
+  const [isTryOnOpen, setIsTryOnOpen] = useState(false);
+  const openTryOn = () => setIsTryOnOpen(true);
+  const closeTryOn = () => setIsTryOnOpen(false);
+
   return (
     <AppProvider>
       <Router>
@@ -45,8 +51,6 @@ function App() {
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
               <Route path="/verify-code" element={<VerifyCodePage />} />
-              <Route path="/set-new-password" element={<SetNewPasswordPage />} />
-
               <Route
                 path="/set-new-password"
                 element={<SetNewPasswordPage />}
@@ -99,12 +103,14 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/category/:categoryId" element={<CategoryPage />} />{" "}
-              {/* Bỏ ProtectedRoute */}
+              <Route path="/category/:categoryId" element={<CategoryPage />} />
+              <Route path="/category/all" element={<CategoryPage />} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </main>
-          <ChatBox /> {/* Thêm ChatBox vào đây */}
+          <ChatBox />
+          <TryOnButton onClick={openTryOn} />
+          <TryOn isOpen={isTryOnOpen} onClose={closeTryOn} />
         </div>
         <ToastContainer
           position="top-right"
@@ -125,5 +131,3 @@ function App() {
 }
 
 export default App;
-
-
