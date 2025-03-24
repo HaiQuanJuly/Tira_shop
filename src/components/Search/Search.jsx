@@ -17,12 +17,12 @@ const Search = ({ isSearchOpen, setIsSearchOpen }) => {
   const handleVoiceSearch = () => {
     if (!SpeechRecognition) {
       toast.error(
-        "Trình duyệt của bạn không hỗ trợ tính năng nhận diện giọng nói. Vui lòng sử dụng Chrome hoặc Edge."
+        "Your browser does not support voice recognition. Please use Chrome or Edge."
       );
       return;
     }
 
-    recognition.lang = "vi-VN";
+    recognition.lang = "en-US"; // Changed to English, adjust as needed
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 
@@ -32,13 +32,13 @@ const Search = ({ isSearchOpen, setIsSearchOpen }) => {
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
       setIsListening(false);
-      toast.info(`Bạn đã nói: "${transcript}"`);
+      toast.info(`You said: "${transcript}"`);
       searchProducts(transcript);
     };
 
     recognition.onerror = (event) => {
       setIsListening(false);
-      toast.error(`Lỗi khi nhận diện giọng nói: ${event.error}`);
+      toast.error(`Voice recognition error: ${event.error}`);
     };
 
     recognition.onend = () => {
@@ -48,15 +48,15 @@ const Search = ({ isSearchOpen, setIsSearchOpen }) => {
 
   const searchProducts = async (query) => {
     try {
-      // Kiểm tra query không rỗng
+      // Check if query is empty
       if (!query || query.trim() === "") {
-        toast.error("Vui lòng cung cấp từ khóa tìm kiếm.");
+        toast.error("Please provide a search keyword.");
         return;
       }
 
       const token = localStorage.getItem("token");
       if (!token) {
-        toast.error("Vui lòng đăng nhập để tìm kiếm sản phẩm");
+        toast.error("Please log in to search for products.");
         navigate("/auth");
         return;
       }
@@ -72,7 +72,7 @@ const Search = ({ isSearchOpen, setIsSearchOpen }) => {
             Authorization: `Bearer ${token}`,
             Accept: "application/json",
           },
-          // body: formData,
+          // body: formData, // Note: GET requests typically don’t have a body
         }
       );
 
@@ -80,22 +80,22 @@ const Search = ({ isSearchOpen, setIsSearchOpen }) => {
       if (response.ok && data.status === "success") {
         const products = data.data.elementList || [];
         if (products.length === 0) {
-          toast.info("Không tìm thấy sản phẩm nào phù hợp.");
+          toast.info("No matching products found.");
           navigate("/category/all", { state: { searchResults: [], query } });
         } else {
-          // Nếu tìm thấy nhiều sản phẩm, điều hướng đến CategoryPage
+          // If products are found, navigate to CategoryPage
           navigate("/category/all", {
             state: { searchResults: products, query },
           });
         }
       } else {
-        console.log("Error response:", data); // In thông báo lỗi từ backend
+        console.log("Error response:", data); // Log error response from backend
         toast.error(
-          data.message || "Không thể tìm kiếm sản phẩm. Vui lòng thử lại."
+          data.message || "Unable to search for products. Please try again."
         );
       }
     } catch (err) {
-      toast.error(`Lỗi khi tìm kiếm: ${err.message}`);
+      toast.error(`Search error: ${err.message}`);
     }
   };
 
@@ -105,18 +105,18 @@ const Search = ({ isSearchOpen, setIsSearchOpen }) => {
 
   const handleFileChange = (event) => {
     if (event.target.files.length > 0) {
-      alert(`Bạn đã chọn ảnh: ${event.target.files[0].name}`);
+      alert(`You selected an image: ${event.target.files[0].name}`);
     }
   };
 
   if (!isSearchOpen) return null;
 
   const handleKeyPesearch = (event) => {
-  
     if (event.key === "Enter") {
       searchProducts(event.target.value);
     }
-  }
+  };
+
   return (
     <div className={styles.searchBar}>
       <input
@@ -124,7 +124,6 @@ const Search = ({ isSearchOpen, setIsSearchOpen }) => {
         placeholder="What are you looking for?"
         className={styles.searchInput}
         onKeyPress={handleKeyPesearch}
-
       />
 
       <div className={styles.searchIcons}>
@@ -134,7 +133,7 @@ const Search = ({ isSearchOpen, setIsSearchOpen }) => {
           disabled={isListening}
         >
           <img src={voiceIcon} alt="Voice Search" width="22" height="22" />
-          {isListening && <span>Đang nghe...</span>}
+          {isListening && <span>Listening...</span>}
         </button>
 
         <button className={styles.iconButton} onClick={handleImageSearch}>

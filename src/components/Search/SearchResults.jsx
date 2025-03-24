@@ -37,19 +37,19 @@ const SearchResults = () => {
         toast.success("Đã thêm vào giỏ hàng thành công!");
       } else {
         toast.error(
-          `Không thể thêm vào giỏ hàng: ${data.message || "Lỗi không xác định"}`
+          `Unable to add to cart: ${data.message || "Unknown error"}`
         );
       }
     } catch (error) {
-      toast.error("Lỗi khi thêm vào giỏ hàng. Vui lòng thử lại.");
+      toast.error("Error adding to cart. Please try again..");
     }
   };
 
   if (!products || products.length === 0) {
     return (
       <div className={styles.noResults}>
-        <h2>Kết quả tìm kiếm cho: "{query}"</h2>
-        <p>Không tìm thấy sản phẩm nào.</p>
+        <h2>Search results for: "{query}"</h2>
+        <p>No products found.</p>
         <button onClick={() => navigate("/")}>Quay lại trang chủ</button>
       </div>
     );
@@ -57,7 +57,7 @@ const SearchResults = () => {
 
   return (
     <div className={styles.searchResults}>
-      <h2>Kết quả tìm kiếm cho: "{query}"</h2>
+      <h2>Search results for: "{query}"</h2>
       <div className={styles.productList}>
         {products.map((product) => (
           <div key={product.id} className={styles.productItem}>
@@ -85,7 +85,7 @@ const SearchResults = () => {
                 className={styles.addToCartBtn}
                 onClick={() => handleAddToCart(product)}
               >
-                Thêm vào giỏ hàng
+                Add to cart
               </button>
             </div>
           </div>
