@@ -9,7 +9,7 @@ function CategoryPage() {
   const { categoryId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated } = useAppContext();
+  const { isAuthenticated, fetchCart } = useAppContext();
   const [category, setCategory] = useState(null);
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
@@ -83,8 +83,10 @@ function CategoryPage() {
       if (!response.ok)
         throw new Error(`HTTP error! Status: ${response.status}`);
       const data = await response.json();
-      if (data.status === "success" && data.data?.elementList) {
-        setBrands(data.data.elementList);
+      
+      if (data.status === "success" && data.data) {
+        
+        setBrands(data.data);
       } else {
         toast.error(data.message || "Failed to fetch brands");
       }
@@ -113,7 +115,7 @@ function CategoryPage() {
       });
 
       const productResponse = await fetch(
-        `http://localhost:8080/tirashop/product?page=0&size=1000`,
+        `http://localhost:8080/tirashop/product`,
         { method: "GET", headers }
       );
       if (!productResponse.ok)
@@ -245,6 +247,7 @@ function CategoryPage() {
       });
       const data = await response.json();
       if (response.ok && data.status === "success") {
+        await fetchCart();
         toast.success("Added to cart successfully!");
       } else {
         toast.error(
@@ -256,6 +259,7 @@ function CategoryPage() {
     }
   };
 
+  
   const resetFilters = () => {
     setPriceRange([0, 15000]);
     setSelectedCategories([]);
@@ -345,7 +349,7 @@ function CategoryPage() {
             <h2>{mapCategoryDisplay(category.name)}</h2>
             {searchQuery && (
               <div className={styles.searchResults}>
-                <h3>Kết quả tìm kiếm cho: "{searchQuery}"</h3>
+                <h3>Search results for: "{searchQuery}"</h3>
                 {searchResults.length > 0 ? (
                   <div className={styles.productList}>
                     {searchResults.map((product) => (
@@ -401,11 +405,10 @@ function CategoryPage() {
                     ))}
                   </div>
                 ) : (
-                  <p>Không tìm thấy sản phẩm nào phù hợp.</p>
+                  <p>No matching products were found.</p>
                 )}
               </div>
             )}
-            <h3>Tất cả sản phẩm</h3>
             <p>{category.description || "No description available."}</p>
             <div className={styles.productList}>
               {filteredProducts.length === 0 ? (

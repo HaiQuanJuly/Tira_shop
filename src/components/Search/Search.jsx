@@ -65,14 +65,14 @@ const Search = ({ isSearchOpen, setIsSearchOpen }) => {
       formData.append("file", query);
 
       const response = await fetch(
-        "http://localhost:8080/tirashop/product/search?page=0&size=10",
+        "http://localhost:8080/tirashop/product?name=" + query,
         {
-          method: "POST",
+          method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: "application/json",
           },
-          body: formData,
+          // body: formData,
         }
       );
 
@@ -82,11 +82,6 @@ const Search = ({ isSearchOpen, setIsSearchOpen }) => {
         if (products.length === 0) {
           toast.info("Không tìm thấy sản phẩm nào phù hợp.");
           navigate("/category/all", { state: { searchResults: [], query } });
-        } else if (products.length === 1) {
-          // Nếu chỉ tìm thấy 1 sản phẩm, điều hướng trực tiếp đến ProductDetail
-          navigate(`/product/${products[0].id}`, {
-            state: { product: products[0] },
-          });
         } else {
           // Nếu tìm thấy nhiều sản phẩm, điều hướng đến CategoryPage
           navigate("/category/all", {
@@ -116,12 +111,20 @@ const Search = ({ isSearchOpen, setIsSearchOpen }) => {
 
   if (!isSearchOpen) return null;
 
+  const handleKeyPesearch = (event) => {
+  
+    if (event.key === "Enter") {
+      searchProducts(event.target.value);
+    }
+  }
   return (
     <div className={styles.searchBar}>
       <input
         type="text"
         placeholder="What are you looking for?"
         className={styles.searchInput}
+        onKeyPress={handleKeyPesearch}
+
       />
 
       <div className={styles.searchIcons}>

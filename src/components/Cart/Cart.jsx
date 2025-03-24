@@ -2,10 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import styles from "./styles.module.scss";
-import { useAppContext } from "../../Context/AppContext";
+import { useAppContext } from "../../context/AppContext";
 
 function Cart() {
   const { isSidebarOpen, setIsSidebarOpen, cart, fetchCart } = useAppContext();
+  
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const navigate = useNavigate();
 

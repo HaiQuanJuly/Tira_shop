@@ -19,7 +19,7 @@ export default function Brand() {
   const handleBrandClick = (brandName) => {
     const categoryId = brandToCategoryMap[brandName];
     if (categoryId) {
-      navigate(`/category/${categoryId}`);
+      navigate(`/category/all`);
     } else {
       console.warn(`No category mapped for brand: ${brandName}`);
     }

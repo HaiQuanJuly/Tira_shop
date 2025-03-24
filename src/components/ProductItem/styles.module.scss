@@ -50,6 +50,7 @@
 .productGrid {
   padding: 20px 0;
   z-index: 0;
+
   .productItem {
     background: #fff;
     border-radius: 12px;
@@ -60,6 +61,9 @@
     border: none;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
     position: relative;
+    display: flex; /* Use flexbox to control layout */
+    flex-direction: column; /* Stack children vertically */
+    height: 100%; /* Ensure all cards take up the same height */
 
     &:hover {
       transform: translateY(-10px);
@@ -144,6 +148,12 @@
       text-align: center;
       text-transform: uppercase;
       letter-spacing: 0.8px;
+      min-height: 3rem; /* Ensure consistent height for product names */
+      display: -webkit-box;
+      -webkit-line-clamp: 2; /* Limit to 2 lines */
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .category {
@@ -152,6 +162,7 @@
       text-align: center;
       margin-bottom: 12px;
       font-weight: 400; /* Giảm độ đậm */
+      min-height: 1.5rem; /* Ensure consistent height for category */
     }
 
     .priceCl {
@@ -161,6 +172,7 @@
       text-align: center;
       margin-bottom: 15px;
       letter-spacing: 0.8px;
+      min-height: 1.5rem; /* Ensure consistent height for price */
     }
 
     .sizeSelector {
@@ -219,6 +231,7 @@
       letter-spacing: 0.8px;
       position: relative;
       overflow: hidden;
+      margin-top: auto; /* Push the button to the bottom */
 
       &:before {
         content: "";

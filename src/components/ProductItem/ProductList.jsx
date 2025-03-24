@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import styles from "./styles.module.scss";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import { useAppContext } from "../../Context/AppContext";
+import { useAppContext } from "../../context/AppContext";
 import React from "react";
 
 const responsive = {
@@ -50,7 +50,7 @@ function ProductList({ isAuthenticated, categoryId }) {
           }, {})
         );
       } else {
-        setError("Không thể lấy danh sách sản phẩm");
+        setError("Unable to fetch product list");
       }
     } catch (err) {
       setError(err.message);
@@ -78,7 +78,7 @@ function ProductList({ isAuthenticated, categoryId }) {
     async (product) => {
       const token = localStorage.getItem("token");
       if (!token || !isAuthenticated) {
-        toast.error("Vui lòng đăng nhập để thêm vào giỏ hàng");
+        toast.error("Please log in to add to cart");
         navigate("/auth");
         return;
       }
@@ -100,18 +100,16 @@ function ProductList({ isAuthenticated, categoryId }) {
         );
         const data = await response.json();
         if (response.ok && data.status === "success") {
-          toast.success("Đã thêm vào giỏ hàng thành công!");
+          toast.success("Added to cart successfully!");
           await fetchCart();
           setIsSidebarOpen(true);
         } else {
           toast.error(
-            `Không thể thêm vào giỏ hàng: ${
-              data.message || "Lỗi không xác định"
-            }`
+            `Unable to add to cart: ${data.message || "Unknown error"}`
           );
         }
       } catch (error) {
-        toast.error("Lỗi khi thêm vào giỏ hàng. Vui lòng thử lại.");
+        toast.error("Error adding to cart. Please try again.");
       }
     },
     [isAuthenticated, navigate, fetchCart, setIsSidebarOpen, selectedSizes]
@@ -120,16 +118,16 @@ function ProductList({ isAuthenticated, categoryId }) {
   const memoizedProducts = useMemo(() => products.slice(0, 7), [products]);
 
   const handleSeeMore = useCallback(() => {
-    navigate("/category/all"); // Điều hướng đến trang hiển thị tất cả sản phẩm
+    navigate("/category/all"); // Navigate to the page showing all products
   }, [navigate]);
 
-  if (loading) return <p>Đang tải sản phẩm...</p>;
-  if (error) return <p>Lỗi: {error}</p>;
-  if (memoizedProducts.length === 0) return <p>Không có sản phẩm nào.</p>;
+  if (loading) return <p>Loading products...</p>;
+  if (error) return <p>Error: {error}</p>;
+  if (memoizedProducts.length === 0) return <p>No products available.</p>;
 
   return (
     <div className={styles.productListContainer}>
-      <p className={styles.bestProduct}>Sản Phẩm Nổi Bật</p>
+      <p className={styles.bestProduct}>Featured Products</p>
       <div className={styles.container}>
         <Carousel
           responsive={responsive}
@@ -151,21 +149,21 @@ function ProductList({ isAuthenticated, categoryId }) {
                       ? `http://localhost:8080${product.imageUrls[0]}`
                       : "https://via.placeholder.com/250"
                   }
-                  alt={product.name || "Sản phẩm không tên"}
+                  alt={product.name || "Unnamed product"}
                 />
               </div>
               <div className={styles.title}>
-                {product.name || "Sản phẩm không tên"}
+                {product.name || "Unnamed product"}
               </div>
               <div className={styles.category}>
-                {product.brandName || "Thương hiệu không xác định"} -{" "}
-                {product.categoryName || "Không có danh mục"}
+                {product.brandName || "Unknown brand"} -{" "}
+                {product.categoryName || "No category"}
               </div>
               <div className={styles.priceCl}>
                 {product.price ? product.price.toFixed(2) : "N/A"} $
               </div>
               <div className={styles.sizeSelector}>
-                <label>Chọn Kích Thước:</label>
+                <label>Select Size:</label>
                 <select
                   onChange={(e) => handleSizeChange(product.id, e.target.value)}
                   value={selectedSizes[product.id] || "M"}
@@ -179,7 +177,7 @@ function ProductList({ isAuthenticated, categoryId }) {
                 onClick={() => handleAddToCart(product)}
                 className={styles.addToCartBtn}
               >
-                Thêm Vào Giỏ Hàng
+                Add to Cart
               </button>
             </div>
           ))}
@@ -187,7 +185,7 @@ function ProductList({ isAuthenticated, categoryId }) {
       </div>
       <div className={styles.buttonContainer}>
         <button className={styles.button} onClick={handleSeeMore}>
-          Xem Thêm Sản Phẩm
+          See More Products
         </button>
       </div>
     </div>
