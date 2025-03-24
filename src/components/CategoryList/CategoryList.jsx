@@ -1,4 +1,3 @@
-// CategoryList.js
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../../Context/AppContext";
@@ -15,21 +14,30 @@ function CategoryList() {
   const mapCategoryDisplay = (category) => {
     const categoryMap = {
       "Tre Em": {
-        name: "Children's Fashion",
-        description: "Products designed for children.",
+        name: "Thời Trang Trẻ Em",
+        description: "Sản phẩm thiết kế cho trẻ em.",
       },
-      Gucci: null, // Bỏ qua category này
+      Gucci: { name: "Gucci", description: "Thời trang cao cấp của Gucci." },
       Mens: {
-        name: "Men's Fashion",
-        description: "Products designed for men.",
+        name: "Thời Trang Nam",
+        description: "Sản phẩm thiết kế cho nam giới.",
       },
       Womens: {
-        name: "Women's Fashion",
-        description: "Products designed for women.",
+        name: "Thời Trang Nữ",
+        description: "Sản phẩm thiết kế cho nữ giới.",
       },
       "Both Male and Female": {
-        name: "Unisex Fashion",
-        description: "Products suitable for both men and women.",
+        name: "Thời Trang Unisex",
+        description: "Sản phẩm phù hợp cho cả nam và nữ.",
+      },
+      Versace: {
+        name: "Versace",
+        description: "Thời trang cao cấp của Versace.",
+      },
+      Zara: { name: "Zara", description: "Thời trang của Zara." },
+      Calvin: {
+        name: "Calvin Klein",
+        description: "Thời trang của Calvin Klein.",
       },
     };
     return (
@@ -44,49 +52,33 @@ function CategoryList() {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const headers = {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      };
-      if (token) {
-        headers["Authorization"] = `Bearer ${token}`;
+      if (!token) {
+        toast.error("Vui lòng đăng nhập để xem danh mục");
+        navigate("/auth");
+        return;
       }
-
       const response = await fetch(
         "http://localhost:8080/tirashop/category/list",
         {
           method: "GET",
-          headers,
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          toast.error("Please log in to view categories");
-          navigate("/auth");
-          return;
-        }
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const text = await response.text();
-      console.log("Raw category list response:", text);
-
-      if (!text) {
-        throw new Error("Empty response from server");
-      }
-
-      const data = JSON.parse(text);
+      if (!response.ok)
+        throw new Error(`Lỗi HTTP! Trạng thái: ${response.status}`);
+      const data = await response.json();
       if (data.status === "success" && data.data) {
         setCategories(data.data.elementList || []);
       } else {
-        setError(data.message || "Failed to fetch categories");
-        toast.error(data.message || "Failed to fetch categories");
+        setError(data.message || "Không thể lấy danh sách danh mục");
       }
     } catch (err) {
-      console.error("Error fetching categories:", err);
       setError(err.message);
-      toast.error(`Error fetching categories: ${err.message}`);
+      toast.error(`Lỗi khi lấy danh mục: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -98,40 +90,44 @@ function CategoryList() {
 
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
-    if (category) {
-      navigate(`/category/${category.id}`);
+    if (category?.id) {
+      const parsedId = parseInt(category.id);
+      if (!isNaN(parsedId) && parsedId > 0) {
+        navigate(`/category/${parsedId}`);
+      } else {
+        toast.error("ID danh mục không hợp lệ. Chuyển hướng về trang chủ...");
+        navigate("/");
+      }
     } else {
-      navigate("/");
+      navigate("/category/all");
     }
   };
 
-  if (loading) return <p>Loading categories...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (loading) return <p>Đang tải danh mục...</p>;
+  if (error) return <p>Lỗi: {error}</p>;
 
   return (
     <div className={styles.categoryListContainer}>
-      <h3>Categories</h3>
+      <h3>Danh Mục</h3>
       <div className={styles.categoryButtons}>
         <button
           className={styles.categoryBtn}
           onClick={() => handleCategorySelect(null)}
         >
-          All
+          Tất Cả
         </button>
-        {categories
-          .filter((category) => mapCategoryDisplay(category) !== null)
-          .map((category) => {
-            const display = mapCategoryDisplay(category);
-            return (
-              <button
-                key={category.id}
-                className={styles.categoryBtn}
-                onClick={() => handleCategorySelect(category)}
-              >
-                {display.name}
-              </button>
-            );
-          })}
+        {categories.map((category) => {
+          const display = mapCategoryDisplay(category);
+          return (
+            <button
+              key={category.id}
+              className={styles.categoryBtn}
+              onClick={() => handleCategorySelect(category)}
+            >
+              {display.name}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

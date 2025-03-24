@@ -156,25 +156,128 @@ function AuthPage() {
             });
           }
         } else {
-          toast.success(
-            "Registration successful! Please log in with your new account.",
+          // Registration successful, now log the user in automatically
+          const loginPayload = {
+            username: formData.username,
+            password: formData.password,
+          };
+
+          const loginResponse = await fetch(
+            "http://localhost:8080/tirashop/auth/login",
             {
-              position: "top-right",
-              autoClose: 3000,
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(loginPayload),
             }
           );
-          setSignIn(true);
-          setFormData({
-            username: "",
-            password: "",
-            confirmPassword: "",
-            email: "",
-            phoneNumber: "",
-            firstName: "",
-            lastName: "",
-            gender: "",
-            dateOfBirth: "",
-          });
+
+          const loginData = await loginResponse.json();
+          console.log("Login Response Status:", loginResponse.status);
+          console.log("Login Response Data:", loginData);
+
+          if (loginResponse.status === 200 && loginData.status === "success") {
+            if (loginData.data && loginData.data.token) {
+              const token = loginData.data.token;
+              localStorage.setItem("token", token);
+              localStorage.setItem(
+                "userId",
+                loginData.data.userId || "unknown"
+              );
+              localStorage.setItem("username", formData.username);
+              setIsAuthenticated(true);
+
+              // Now send the welcome email using the token
+              try {
+                const emailResponse = await fetch(
+                  "http://localhost:8080/api/email/send-registration",
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${token}`, // Add the token here
+                    },
+                    body: JSON.stringify({
+                      toEmail: formData.email,
+                      username: formData.username,
+                    }),
+                  }
+                );
+
+                const emailData = await emailResponse.json();
+                console.log("Email Response Status:", emailResponse.status);
+                console.log("Email Response Data:", emailData);
+
+                if (
+                  emailResponse.status === 200 &&
+                  emailData.status === "success"
+                ) {
+                  toast.success("Welcome email sent successfully!", {
+                    position: "top-right",
+                    autoClose: 3000,
+                  });
+                } else {
+                  toast.warn(
+                    "Registration successful, but failed to send welcome email.",
+                    {
+                      position: "top-right",
+                      autoClose: 3000,
+                    }
+                  );
+                }
+              } catch (emailErr) {
+                console.error("Error sending welcome email:", emailErr);
+                toast.warn(
+                  "Registration successful, but failed to send welcome email.",
+                  {
+                    position: "top-right",
+                    autoClose: 3000,
+                  }
+                );
+              }
+
+              toast.success("Registration successful! You are now logged in.", {
+                position: "top-right",
+                autoClose: 3000,
+              });
+              navigate("/");
+            } else {
+              setError("Registration successful, but auto-login failed.");
+              toast.error("Auto-login failed. Please log in manually.", {
+                position: "top-right",
+                autoClose: 3000,
+              });
+              setSignIn(true);
+              setFormData({
+                username: "",
+                password: "",
+                confirmPassword: "",
+                email: "",
+                phoneNumber: "",
+                firstName: "",
+                lastName: "",
+                gender: "",
+                dateOfBirth: "",
+              });
+            }
+          } else {
+            setError("Registration successful, but auto-login failed.");
+            toast.error("Auto-login failed. Please log in manually.", {
+              position: "top-right",
+              autoClose: 3000,
+            });
+            setSignIn(true);
+            setFormData({
+              username: "",
+              password: "",
+              confirmPassword: "",
+              email: "",
+              phoneNumber: "",
+              firstName: "",
+              lastName: "",
+              gender: "",
+              dateOfBirth: "",
+            });
+          }
         }
       } else {
         setError(data.message || "Authentication failed. Please try again.");

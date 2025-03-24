@@ -1,4 +1,3 @@
-// ProductList.js
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -24,37 +23,36 @@ function ProductList({ isAuthenticated, categoryId }) {
   const { fetchCart, setIsSidebarOpen, selectedCategory } = useAppContext();
 
   const fetchProducts = useCallback(async () => {
-    console.log("Fetching products...");
     setLoading(true);
     try {
+      const token = localStorage.getItem("token");
+      const headers = {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+
       const url = categoryId
         ? `http://localhost:8080/tirashop/product?categoryId=${categoryId}`
         : selectedCategory
         ? `http://localhost:8080/tirashop/product?categoryId=${selectedCategory.id}`
         : "http://localhost:8080/tirashop/product";
 
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log("Response status:", response.status);
+      const response = await fetch(url, { method: "GET", headers });
       const data = await response.json();
-      console.log("API data:", data);
       if (data.status === "success") {
         const productList = data.data.elementList || [];
         setProducts(productList);
-        const initialSizes = productList.reduce((acc, product) => {
-          acc[product.id] = "M";
-          return acc;
-        }, {});
-        setSelectedSizes(initialSizes);
+        setSelectedSizes(
+          productList.reduce((acc, product) => {
+            acc[product.id] = "M";
+            return acc;
+          }, {})
+        );
       } else {
-        setError("Failed to fetch products");
+        setError("Không thể lấy danh sách sản phẩm");
       }
     } catch (err) {
-      console.error("Fetch error:", err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -73,21 +71,17 @@ function ProductList({ isAuthenticated, categoryId }) {
   );
 
   const handleSizeChange = useCallback((productId, size) => {
-    setSelectedSizes((prev) => ({
-      ...prev,
-      [productId]: size,
-    }));
+    setSelectedSizes((prev) => ({ ...prev, [productId]: size }));
   }, []);
 
   const handleAddToCart = useCallback(
     async (product) => {
       const token = localStorage.getItem("token");
       if (!token || !isAuthenticated) {
-        toast.error("Please log in to add to cart");
+        toast.error("Vui lòng đăng nhập để thêm vào giỏ hàng");
         navigate("/auth");
         return;
       }
-
       try {
         const response = await fetch(
           "http://localhost:8080/tirashop/cart/add",
@@ -104,20 +98,20 @@ function ProductList({ isAuthenticated, categoryId }) {
             }),
           }
         );
-
         const data = await response.json();
         if (response.ok && data.status === "success") {
-          toast.success("Added to cart successfully!");
+          toast.success("Đã thêm vào giỏ hàng thành công!");
           await fetchCart();
           setIsSidebarOpen(true);
         } else {
           toast.error(
-            `Failed to add to cart: ${data.message || "Unknown error"}`
+            `Không thể thêm vào giỏ hàng: ${
+              data.message || "Lỗi không xác định"
+            }`
           );
         }
       } catch (error) {
-        console.error("Error adding to cart:", error);
-        toast.error("Error adding to cart. Please try again.");
+        toast.error("Lỗi khi thêm vào giỏ hàng. Vui lòng thử lại.");
       }
     },
     [isAuthenticated, navigate, fetchCart, setIsSidebarOpen, selectedSizes]
@@ -126,30 +120,24 @@ function ProductList({ isAuthenticated, categoryId }) {
   const memoizedProducts = useMemo(() => products.slice(0, 7), [products]);
 
   const handleSeeMore = useCallback(() => {
-    const targetCategoryId =
-      categoryId || (selectedCategory && selectedCategory.id);
-    if (targetCategoryId) {
-      navigate(`/category/${targetCategoryId}`);
-    } else {
-      navigate("/category/all");
-    }
-  }, [categoryId, selectedCategory, navigate]);
+    navigate("/category/all"); // Điều hướng đến trang hiển thị tất cả sản phẩm
+  }, [navigate]);
 
-  if (loading) return <p>Loading products...</p>;
-  if (error) return <p>Error: {error}</p>;
-  if (memoizedProducts.length === 0) return <p>No products available.</p>;
+  if (loading) return <p>Đang tải sản phẩm...</p>;
+  if (error) return <p>Lỗi: {error}</p>;
+  if (memoizedProducts.length === 0) return <p>Không có sản phẩm nào.</p>;
 
   return (
     <div className={styles.productListContainer}>
-      <p className={styles.bestProduct}>Our Best Products</p>
+      <p className={styles.bestProduct}>Sản Phẩm Nổi Bật</p>
       <div className={styles.container}>
         <Carousel
           responsive={responsive}
           className={styles.productGrid}
-          infinite={true}
+          infinite
           autoPlay={false}
-          keyBoardControl={true}
-          showDots={true}
+          keyBoardControl
+          showDots
         >
           {memoizedProducts.map((product) => (
             <div key={product.id} className={styles.productItem}>
@@ -159,25 +147,25 @@ function ProductList({ isAuthenticated, categoryId }) {
               >
                 <img
                   src={
-                    product.imageUrls && product.imageUrls.length > 0
+                    product.imageUrls?.[0]
                       ? `http://localhost:8080${product.imageUrls[0]}`
                       : "https://via.placeholder.com/250"
                   }
-                  alt={product.name || "Unnamed Product"}
+                  alt={product.name || "Sản phẩm không tên"}
                 />
               </div>
               <div className={styles.title}>
-                {product.name || "Unnamed Product"}
+                {product.name || "Sản phẩm không tên"}
               </div>
               <div className={styles.category}>
-                {product.brandName || "Unknown Brand"} -{" "}
-                {product.categoryName || "No Category"}
+                {product.brandName || "Thương hiệu không xác định"} -{" "}
+                {product.categoryName || "Không có danh mục"}
               </div>
               <div className={styles.priceCl}>
-                ${product.price ? product.price.toFixed(2) : "N/A"}
+                {product.price ? product.price.toFixed(2) : "N/A"} $
               </div>
               <div className={styles.sizeSelector}>
-                <label>Select Size:</label>
+                <label>Chọn Kích Thước:</label>
                 <select
                   onChange={(e) => handleSizeChange(product.id, e.target.value)}
                   value={selectedSizes[product.id] || "M"}
@@ -191,7 +179,7 @@ function ProductList({ isAuthenticated, categoryId }) {
                 onClick={() => handleAddToCart(product)}
                 className={styles.addToCartBtn}
               >
-                Add to Cart
+                Thêm Vào Giỏ Hàng
               </button>
             </div>
           ))}
@@ -199,16 +187,16 @@ function ProductList({ isAuthenticated, categoryId }) {
       </div>
       <div className={styles.buttonContainer}>
         <button className={styles.button} onClick={handleSeeMore}>
-          See More Products
+          Xem Thêm Sản Phẩm
         </button>
       </div>
     </div>
   );
 }
 
-export default React.memo(ProductList, (prevProps, nextProps) => {
-  return (
+export default React.memo(
+  ProductList,
+  (prevProps, nextProps) =>
     prevProps.isAuthenticated === nextProps.isAuthenticated &&
     prevProps.categoryId === nextProps.categoryId
-  );
-});
+);

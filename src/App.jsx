@@ -1,4 +1,3 @@
-// App.jsx
 import {
   BrowserRouter as Router,
   Routes,
@@ -103,8 +102,16 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              {/* Route cho /category/:categoryId */}
               <Route path="/category/:categoryId" element={<CategoryPage />} />
+              {/* Route cho /category/all */}
               <Route path="/category/all" element={<CategoryPage />} />
+              {/* Route cho /category (không có categoryId) */}
+              <Route
+                path="/category"
+                element={<Navigate to="/category/all" />}
+              />
+              {/* Route mặc định */}
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </main>
