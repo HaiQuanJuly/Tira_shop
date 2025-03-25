@@ -8,6 +8,7 @@ import searchIcon from "../../assets/icons/svgs/searchIcon.svg";
 import barIcon from "../../assets/icons/svgs/bar.svg";
 import closeIcon from "../../assets/icons/svgs/close.svg";
 import Search from "../Search/Search";
+import logo from "../../assets/images/logo.png";
 import { useAppContext } from "../../context/AppContext";
 
 function FixedHeader() {
@@ -114,7 +115,7 @@ function FixedHeader() {
           }`}
           onClick={() => navigate("/")}
         >
-          TIRA
+         <img src={logo} alt="TIRA Logo" className={styles.logo} />
         </h1>
 
         <div
